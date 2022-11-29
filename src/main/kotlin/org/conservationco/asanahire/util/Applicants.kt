@@ -23,10 +23,9 @@ internal fun <A : Applicant> A.deserialize(source: Task) {
     documents = source.attachments
 }
 
-internal fun OriginalApplicant.toAsanaManagerApplicant(): ManagerApplicant {
+internal fun OriginalApplicant.toManagerApplicant(): ManagerApplicant {
     val copy = copy()
     return ManagerApplicant(
-        id = copy.id,
         name = copy.name,
         documents = copy.documents,
         preferredName = copy.preferredName,
