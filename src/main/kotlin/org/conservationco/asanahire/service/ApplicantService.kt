@@ -50,26 +50,26 @@ class ApplicantService(
         val (title, source, destination) = snapshot
 
         withContext(Dispatchers.IO) {
-            val tasks = getNewTasks(snapshot)
-            for (task in tasks) {
+            val newTasks = getNewTasks(snapshot)
+            for (newTask in newTasks) {
                 // Add that task to the manager project
-                val createdTask = async { asanaContext { destination.createTask(task) } }
+                val createdTask = async { asanaContext { destination.createTask(newTask) } }
 
                 // Send a receipt of application confirmation message to the applicant
                 launch {
                     val template = mailer.makeJobTemplate(
                         Template.UPDATE,
-                        Address(task.name, task.customFields.find { it.name == "Email" }?.textValue!!),
+                        Address(newTask.name, newTask.customFields.find { it.name == "Email" }?.textValue!!),
                         title
                     )
                     mailer.send(template)
                 }
 
+                // Add the manager task's id to the original task as a fallback
                 val updatedOriginal = OriginalApplicant(
                     receiptStage = "✅",
-                    id = createdTask.await().gid,
+                    id = newTask.gid,
                 )
-                // Add the manager task's id to the original task as a fallback
                 launch {
                     asanaContext {
                         updatedOriginal
@@ -110,8 +110,8 @@ class ApplicantService(
             if (lastSync == LocalDateTime.MIN)
                 getTasks(true)
             else
-                this@ApplicantService.workspace.search("created_at.after=$lastSync", gid)
-        return tasks.convertToListOf(OriginalApplicant::class, this@getAllUnsyncedApplicants)
+                this@ApplicantService.workspace.search("?created_at.after=$lastSync", gid)
+        return tasks.convertToListOf(OriginalApplicant::class, this@getAllUnsyncedApplicants, applicantDeserializingFn())
     }
 
     fun getAllNeedingRejection(jobId: String): List<OriginalApplicant> {
