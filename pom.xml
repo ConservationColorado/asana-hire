@@ -81,6 +81,27 @@
             <artifactId>kotlin-asana</artifactId>
             <version>ec56febb15</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.jetbrains.kotlinx</groupId>
+            <artifactId>kotlinx-html-jvm</artifactId>
+            <version>0.8.0</version>
+        </dependency>
+        <dependency>
+            <groupId>net.axay</groupId>
+            <artifactId>simplekotlinmail-core</artifactId>
+            <version>1.4.0</version>
+        </dependency>
+        <dependency>
+            <groupId>net.axay</groupId>
+            <artifactId>simplekotlinmail-html</artifactId>
+            <version>1.4.0</version>
+        </dependency>
+        <dependency>
+            <groupId>net.axay</groupId>
+            <artifactId>simplekotlinmail-client</artifactId>
+            <version>1.4.0</version>
+        </dependency>
     </dependencies>
 
     <build>

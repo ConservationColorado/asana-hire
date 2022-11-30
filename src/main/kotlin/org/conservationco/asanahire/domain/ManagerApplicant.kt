@@ -7,7 +7,7 @@ import org.conservationco.asana.serialization.customfield.AsanaCustomField
 /**
  * Data class for POSTing [OriginalApplicant] objects to a manager context.
  */
-internal data class ManagerApplicant(
+data class ManagerApplicant(
     override var id: String = "",
     override var name: String = "",
     override var documents: Collection<Attachment> = emptyList(),

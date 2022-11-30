@@ -4,7 +4,7 @@ import com.asana.models.Attachment
 import org.conservationco.asana.serialization.AsanaSerializable
 import org.conservationco.asana.serialization.customfield.AsanaCustomField
 
-internal data class OriginalApplicant(
+data class OriginalApplicant(
     override var id: String = "",
     override var name: String = "",
     override var documents: Collection<Attachment> = emptyList(),

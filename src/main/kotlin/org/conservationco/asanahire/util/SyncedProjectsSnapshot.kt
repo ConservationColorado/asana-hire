@@ -5,6 +5,7 @@ import org.conservationco.asana.asanaContext
 import java.time.LocalDateTime
 
 data class SyncedProjectsSnapshot(
+    val name: String,
     val source: Project,
     val destination: Project,
 ) {

@@ -1,16 +1,17 @@
 package org.conservationco.asanahire.domain
 
-import java.time.LocalDateTime
+import jakarta.persistence.*
+import org.conservationco.asana.serialization.AsanaSerializable
+import org.conservationco.asana.serialization.customfield.AsanaCustomField
 
-data class Job(
-    val id: String,
-    val originalSourceId: String = "",
-    var managerSourceId: String = "",
-    val title: String = "",
-    val startOn: LocalDateTime = LocalDateTime.MIN,
-    val endOn: LocalDateTime = LocalDateTime.MIN,
-    val status: String = "",
-    val team: String = "",
-    val hiringManagerEmail: String = "",
-    val madeHire: String = "",
-)
+@Entity
+open class Job : AsanaSerializable<Job> {
+    @Id open var id: String = ""
+    open var title: String = ""
+    @AsanaCustomField("Origin project gid")     open var originalSourceId: String = ""
+    @AsanaCustomField("Manager project gid")    open var managerSourceId: String = ""
+    @AsanaCustomField("Status")                 open var status: String = ""
+    @AsanaCustomField("Team")                   open var team: String = ""
+    @AsanaCustomField("Hiring manager email")   open var hiringManagerEmail: String = ""
+    @AsanaCustomField("Made hire?")             open var madeHire: String = ""
+}

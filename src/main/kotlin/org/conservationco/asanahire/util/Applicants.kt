@@ -26,6 +26,7 @@ internal fun <A : Applicant> A.deserialize(source: Task) {
 internal fun OriginalApplicant.toManagerApplicant(): ManagerApplicant {
     val copy = copy()
     return ManagerApplicant(
+        id = copy.id,
         name = copy.name,
         documents = copy.documents,
         preferredName = copy.preferredName,
@@ -36,3 +37,27 @@ internal fun OriginalApplicant.toManagerApplicant(): ManagerApplicant {
         references = copy.references
     )
 }
+
+internal fun OriginalApplicant.needsSyncing(): Boolean = managerAlias.isEmpty()
+
+internal fun ManagerApplicant.isInterviewing(): Boolean = interviewStage.isNotEmpty() || interviewSubstage.isNotEmpty()
+
+/**
+ * Use this function to ensure that no communication is sent *after* the receiver applicant is rejected. If a candidate
+ * is rejected, they should not receive any further communication from us.
+ */
+internal fun OriginalApplicant.hasBeenCommunicatedTo(): Boolean {
+    return receiptStage.isNotEmpty() || rejectionStage.isNotEmpty()
+}
+
+internal fun OriginalApplicant.communicate() {
+    if (!hasBeenCommunicatedTo()) receiptStage = "✅"
+}
+
+internal fun OriginalApplicant.hasBeenRejected(): Boolean = rejectionStage.isNotEmpty()
+
+/**
+ * If applicant is in process of interview, do not reject them either! If an applicant was already rejected do not
+ * message them again.
+ */
+internal fun ManagerApplicant.needsRejection(): Boolean = hiringManagerRating == "No" && !isInterviewing()
