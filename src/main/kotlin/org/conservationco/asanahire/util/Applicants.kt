@@ -38,7 +38,7 @@ internal fun OriginalApplicant.toManagerApplicant(): ManagerApplicant {
     )
 }
 
-internal fun OriginalApplicant.needsSyncing(): Boolean = managerAlias.isEmpty()
+internal fun OriginalApplicant.needsSyncing(): Boolean = receiptStage.isEmpty()
 
 internal fun ManagerApplicant.isInterviewing(): Boolean = interviewStage.isNotEmpty() || interviewSubstage.isNotEmpty()
 

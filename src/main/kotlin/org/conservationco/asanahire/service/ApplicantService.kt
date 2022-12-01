@@ -26,6 +26,19 @@ class ApplicantService(
 
     private var lastSync = LocalDateTime.MIN
 
+    suspend fun getAllNeedingRejection(jobId: String): List<OriginalApplicant> {
+        var applicants = emptyList<OriginalApplicant>()
+        withContext(Dispatchers.IO) {
+            jobRepository
+                .findById(jobId)
+                .ifPresentOrElse(
+                    { applicants = rejectableApplicants(it) },
+                    { throw NoSuchElementException() }
+                )
+        }
+        return applicants
+    }
+
     suspend fun trySync(jobId: String) {
         withContext(Dispatchers.IO) {
             jobRepository
@@ -46,50 +59,42 @@ class ApplicantService(
         if (snapshot.needsSyncing()) doApplicantSync(snapshot)
     }
 
-    private suspend fun doApplicantSync(snapshot: SyncedProjectsSnapshot) {
+    private suspend fun doApplicantSync(snapshot: SyncedProjectsSnapshot) = coroutineScope {
         val (title, source, destination) = snapshot
 
-        withContext(Dispatchers.IO) {
-            val newTasks = getNewTasks(snapshot)
-            for (newTask in newTasks) {
-                // Add that task to the manager project
-                val createdTask = async { asanaContext { destination.createTask(newTask) } }
-
-                // Send a receipt of application confirmation message to the applicant
-                launch {
-                    val template = mailer.makeJobTemplate(
-                        Template.UPDATE,
-                        Address(newTask.name, newTask.customFields.find { it.name == "Email" }?.textValue!!),
-                        title
-                    )
-                    mailer.send(template)
-                }
-
-                // Add the manager task's id to the original task as a fallback
-                val updatedOriginal = OriginalApplicant(
-                    receiptStage = "✅",
-                    id = newTask.gid,
-                )
-                launch {
-                    asanaContext {
-                        updatedOriginal
-                            .convertToTask(source, applicantSerializingFn())
-                            .update()
-                    }
-                }
-            }
+        val newTasks = getNewTasks(snapshot)
+        for (newTask in newTasks) {
+            val (email, taskToCreate) = newTask
+            // Add that task to the manager project
+            launch { destination.createTask(taskToCreate) }
+            // Send a receipt of application confirmation message to the applicant
+            launch { emailReceiptOfApplication(taskToCreate.name, email, title) }
+            val updatedOriginal = OriginalApplicant(
+                receiptStage = "✅",
+                id = taskToCreate.gid, // Converted task still has the original task's gid, so reuse it here
+                managerAlias = deferredCreatedTask.await().gid,
+            )
         }
         lastSync = snapshot.time
     }
 
-    private fun getNewTasks(snapshot: SyncedProjectsSnapshot): List<Task> = asanaContext {
+    private suspend fun Project.createTask(taskToCreate: Task) = asanaContext {
+        createTask(taskToCreate)
+    }
+
+    private suspend fun emailReceiptOfApplication(name: String, email: String, title: String) {
+        val template = mailer.makeJobTemplate(Template.UPDATE, Address(name, email), title)
+        mailer.send(template)
+    }
+
+    private fun getNewTasks(snapshot: SyncedProjectsSnapshot): List<Pair<String, Task>> = asanaContext {
         val (_, source, destination) = snapshot
         val newApplicants = source
             .getNewTasks(true)
             .convertToListOf(OriginalApplicant::class, source, applicantDeserializingFn())
         val applicantsToAdd =
             newApplicants.ifEmpty {
-                source.getAllUnsyncedApplicants()
+                source.forceGetAllUnsyncedApplicants()
             }
         return destination.prepareAsManagerTasks(applicantsToAdd)
     }
@@ -101,28 +106,17 @@ class ApplicantService(
             .asSequence()
             .filter(OriginalApplicant::needsSyncing)
             .map { it.toManagerApplicant() }
-            .map { it.convertToTask(this@prepareAsManagerTasks, applicantSerializingFn()) }
+            .map { it.email to it.convertToTask(this@prepareAsManagerTasks, applicantSerializingFn()) }
             .toList()
     }
 
-    private fun Project.getAllUnsyncedApplicants(): List<OriginalApplicant> = asanaContext {
+    private fun Project.forceGetAllUnsyncedApplicants(): List<OriginalApplicant> = asanaContext {
         val tasks =
             if (lastSync == LocalDateTime.MIN)
                 getTasks(true)
             else
                 this@ApplicantService.workspace.search("?created_at.after=$lastSync", gid)
-        return tasks.convertToListOf(OriginalApplicant::class, this@getAllUnsyncedApplicants, applicantDeserializingFn())
-    }
-
-    fun getAllNeedingRejection(jobId: String): List<OriginalApplicant> {
-        var applicants = emptyList<OriginalApplicant>()
-        jobRepository
-            .findById(jobId)
-            .ifPresentOrElse(
-                { applicants = rejectableApplicants(it) },
-                { throw NoSuchElementException() }
-            )
-        return applicants
+        return tasks.convertToListOf(OriginalApplicant::class, this@forceGetAllUnsyncedApplicants, applicantDeserializingFn())
     }
 
     private fun rejectableApplicants(job: Job): List<OriginalApplicant> {
