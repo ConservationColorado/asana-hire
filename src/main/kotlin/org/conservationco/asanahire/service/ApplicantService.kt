@@ -25,7 +25,7 @@ class ApplicantService(
     @Autowired private val mailer: JobMailService,
 ) {
 
-    private var lastSync = LocalDateTime.MIN
+    private var syncMap: MutableMap<String, LocalDateTime> = HashMap()
 
     suspend fun getAllNeedingRejection(jobId: String): List<OriginalApplicant> {
         var applicants = emptyList<OriginalApplicant>()
@@ -40,15 +40,13 @@ class ApplicantService(
         return applicants
     }
 
-    suspend fun trySync(jobId: String) {
-        withContext(Dispatchers.IO) {
-            jobRepository
-                .findById(jobId)
-                .ifPresentOrElse(
-                    { job -> launch { checkIfSyncNeeded(job) } },
-                    { throw NoSuchElementException() }
-                )
-        }
+    suspend fun trySync(jobId: String) = withContext(Dispatchers.IO) {
+        jobRepository
+            .findById(jobId)
+            .ifPresentOrElse(
+                { job -> launch { checkIfSyncNeeded(job) } },
+                { throw NoSuchElementException() }
+            )
     }
 
     private suspend fun checkIfSyncNeeded(job: Job) = coroutineScope {
@@ -72,7 +70,7 @@ class ApplicantService(
             // Update the original task's receipt stage
             launch { updateReceiptOfApplication(source, originalApplicant) }
         }
-        lastSync = snapshot.time
+        syncMap[source.gid] = snapshot.time
     }
 
     private fun updateReceiptOfApplication(source: Project, originalApplicant: OriginalApplicant) = asanaContext {
@@ -124,6 +122,7 @@ class ApplicantService(
     }
 
     private fun Project.getNewTasksBySearchOrByForce(): List<Task> = asanaContext {
+        val lastSync = syncMap[gid]
         return if (lastSync == LocalDateTime.MIN) getTasks(true)
         else this@ApplicantService.workspace.search("?created_at.after=$lastSync", gid)
     }
