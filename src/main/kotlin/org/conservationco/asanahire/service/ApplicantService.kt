@@ -66,7 +66,7 @@ class ApplicantService(
             // Add that task to the manager project
             launch { destination.createTask(managerTask) }
             // Send a receipt of application confirmation message to the applicant
-            launch { emailReceiptOfApplication(originalApplicant.name, originalApplicant.email, jobTitle) }
+            launch { emailReceiptOfApplication(originalApplicant.preferredName, originalApplicant.email, jobTitle) }
             // Update the original task's receipt stage
             launch { updateReceiptOfApplication(source, originalApplicant) }
         }
@@ -123,8 +123,8 @@ class ApplicantService(
 
     private fun Project.getNewTasksBySearchOrByForce(): List<Task> = asanaContext {
         val lastSync = syncMap[gid]
-        return if (lastSync == LocalDateTime.MIN) getTasks(true)
-        else this@ApplicantService.workspace.search("?created_at.after=$lastSync", gid)
+        return if (lastSync == null) getTasks(true)
+        else this@ApplicantService.workspace.search("created_at.after=$lastSync", gid)
     }
 
     private fun rejectableApplicants(job: Job): List<OriginalApplicant> {
