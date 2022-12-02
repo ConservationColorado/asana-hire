@@ -22,6 +22,9 @@ class JobMailService(
 
     // todo allow for layouts: injection of templates within templates
     suspend fun send(message: TemplatedJobMessage) {
+        val senderAddress = message.sender.address
+        val recipientAddress = message.recipient.address
+        if (senderAddress.isEmpty() || recipientAddress.isEmpty()) return
         val email: Email = emailBuilder {
             from(message.sender.address)
             to(message.recipient.address)
