@@ -1,6 +1,7 @@
 package org.conservationco.asanahire.util
 
 import com.asana.models.Task
+import org.conservationco.asana.asanaContext
 import org.conservationco.asanahire.domain.Applicant
 import org.conservationco.asanahire.domain.ManagerApplicant
 import org.conservationco.asanahire.domain.OriginalApplicant
@@ -61,3 +62,11 @@ internal fun OriginalApplicant.hasBeenRejected(): Boolean = rejectionStage.isNot
  * message them again.
  */
 internal fun ManagerApplicant.needsRejection(): Boolean = hiringManagerRating == "No" && !isInterviewing()
+
+internal fun Task.convertToOriginalApplicant() = asanaContext {
+    convertTo(OriginalApplicant::class, applicantDeserializingFn())
+}
+
+internal fun Task.convertToManagerApplicant() = asanaContext {
+    convertTo(ManagerApplicant::class, applicantDeserializingFn())
+}
