@@ -74,10 +74,9 @@ class ApplicantService(
     }
 
     private fun updateReceiptOfApplication(source: Project, originalApplicant: OriginalApplicant) = asanaContext {
-        val updatedOriginal = originalApplicant
+        originalApplicant
             .copy()
             .apply { receiptStage = "✅" }
-        updatedOriginal
             .convertToTask(source, applicantSerializingFn())
             .update()
     }
