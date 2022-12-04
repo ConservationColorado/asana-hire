@@ -1,5 +1,6 @@
 package org.conservationco.asanahire.util
 
+import com.asana.models.Project
 import com.asana.models.Task
 import org.conservationco.asana.asanaContext
 import org.conservationco.asanahire.domain.Applicant
@@ -69,4 +70,15 @@ internal fun Task.convertToOriginalApplicant() = asanaContext {
 
 internal fun Task.convertToManagerApplicant() = asanaContext {
     convertTo(ManagerApplicant::class, applicantDeserializingFn())
+}
+
+internal fun OriginalApplicant.copyAndUpdate(
+    updateOn: Project,
+    block: OriginalApplicant.() -> Unit
+) = asanaContext {
+    this@copyAndUpdate
+        .copy()
+        .apply(block)
+        .convertToTask(updateOn, applicantSerializingFn())
+        .update()
 }

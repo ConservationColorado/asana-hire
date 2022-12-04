@@ -57,6 +57,16 @@ class JobMailService(
         return TemplatedJobMessage(template, sender, receiver, title, jobTitle)
     }
 
+    suspend fun emailReceiptOfApplication(name: String, email: String, title: String) {
+        val template = makeJobTemplate(Template.UPDATE, Address(name, email), title)
+        send(template)
+    }
+
+    suspend fun emailRejection(name: String, email: String, title: String) {
+        val template = makeJobTemplate(Template.REJECTION, Address(name, email), title)
+        send(template)
+    }
+
     private fun readTemplate(name: String): String = File("src/main/resources/templates/$name").readText()
 
 }
