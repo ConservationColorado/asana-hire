@@ -25,7 +25,9 @@ class ApplicantService(
     @Autowired private val mailer: JobMailService,
 ) {
 
-    private var syncMap: MutableMap<String, LocalDateTime> = HashMap()
+    private var jobIdsToLastCompletedSync: MutableMap<String, LocalDateTime> = HashMap()
+
+    private val ongoingSyncs: Set<String> = HashSet()
 
     suspend fun getAllNeedingRejection(jobId: String): List<OriginalApplicant> {
         var applicants = emptyList<OriginalApplicant>()
@@ -70,7 +72,7 @@ class ApplicantService(
             // Update the original task's receipt stage
             launch { updateReceiptOfApplication(source, originalApplicant) }
         }
-        syncMap[source.gid] = snapshot.time
+        jobIdsToLastCompletedSync[source.gid] = snapshot.time
     }
 
     private fun updateReceiptOfApplication(source: Project, originalApplicant: OriginalApplicant) = asanaContext {
@@ -121,7 +123,7 @@ class ApplicantService(
     }
 
     private fun Project.getNewTasksBySearchOrByForce(): List<Task> = asanaContext {
-        val lastSync = syncMap[gid]
+        val lastSync = jobIdsToLastCompletedSync[gid]
         return if (lastSync == null) getTasks(true)
         else this@ApplicantService.workspace.search("created_at.after=$lastSync", gid)
     }
