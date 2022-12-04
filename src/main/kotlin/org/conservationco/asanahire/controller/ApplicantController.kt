@@ -13,8 +13,6 @@ class ApplicantController(
     suspend fun rejectApplicants(@PathVariable jobId: String) = applicantService.getAllNeedingRejection(jobId)
 
     @PutMapping("/{jobId}/sync")
-    suspend fun sync(@PathVariable jobId: String) {
-        applicantService.trySync(jobId)
-    }
+    suspend fun sync(@PathVariable jobId: String) = applicantService.trySync(jobId)
 
 }

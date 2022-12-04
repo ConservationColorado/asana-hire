@@ -21,7 +21,7 @@ internal fun <A : Applicant> Task.serialize(source: A) {
 internal fun <A : Applicant> A.deserialize(source: Task) {
     name = source.name
     id = source.gid
-    documents = source.attachments
+    documents = if (source.attachments != null) source.attachments else emptyList()
 }
 
 internal fun OriginalApplicant.toManagerApplicant(): ManagerApplicant {

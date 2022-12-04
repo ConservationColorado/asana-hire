@@ -1,6 +1,6 @@
-package org.conservationco.asanahire.mail.template
+package org.conservationco.asanahire.domain.mail.template
 
-import org.conservationco.asanahire.mail.Address
+import org.conservationco.asanahire.domain.mail.Address
 
 class TemplatedJobMessage(
     template: Template,
