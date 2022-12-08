@@ -5,18 +5,37 @@ import {
 } from 'react-router-dom';
 
 import AllJobsPage from "./pages/AllJobs";
-import NewJobPage from "./pages/NewJob";
-import FavoritesPage from "./pages/Favorites";
 import MainNavigation from "./components/layout/MainNavigation";
+import JobPage from "./pages/JobPage";
+import ManageJobsPage from "./pages/ManageJobsPage";
+import SettingsPage from "./pages/SettingsPage";
+import HelpPage from "./pages/HelpPage";
 
 function App() {
     return (
         <div>
             <MainNavigation/>
             <Routes>
-                <Route path='/' element={<AllJobsPage/>}/>
-                <Route path='/new' element={<NewJobPage/>}/>
-                <Route path='/favorites' element={<FavoritesPage/>}/>
+                <Route
+                    path='/'
+                    element={<AllJobsPage/>}
+                />
+                <Route
+                    path='/jobs'
+                    element={<JobPage/>}
+                />
+                <Route
+                    path='/manage'
+                    element={<ManageJobsPage/>}
+                />
+                <Route
+                    path='/settings'
+                    element={<SettingsPage/>}
+                />
+                <Route
+                    path='/help'
+                    element={<HelpPage/>}
+                />
             </Routes>
         </div>
     );
