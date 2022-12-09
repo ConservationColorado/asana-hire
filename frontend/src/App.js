@@ -4,25 +4,24 @@ import {
     Route,
 } from 'react-router-dom';
 
-import AllJobsPage from "./pages/AllJobs";
-import MainNavigation from "./components/layout/MainNavigation";
-import JobPage from "./pages/JobPage";
 import ManageJobsPage from "./pages/ManageJobsPage";
 import SettingsPage from "./pages/SettingsPage";
 import HelpPage from "./pages/HelpPage";
+import Layout from "./components/ui/Layout";
+import HomePage from "./pages/HomePage";
+import AllJobsPage from "./pages/AllJobs";
 
 function App() {
     return (
-        <div>
-            <MainNavigation/>
+        <Layout>
             <Routes>
                 <Route
                     path='/'
-                    element={<AllJobsPage/>}
+                    element={<HomePage/>}
                 />
                 <Route
                     path='/jobs'
-                    element={<JobPage/>}
+                    element={<AllJobsPage/>}
                 />
                 <Route
                     path='/manage'
@@ -37,7 +36,7 @@ function App() {
                     element={<HelpPage/>}
                 />
             </Routes>
-        </div>
+        </Layout>
     );
 }
 

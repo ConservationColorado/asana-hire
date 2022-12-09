@@ -1,7 +1,7 @@
 import {useLinkClickHandler, useLocation} from "react-router-dom";
 import {Navbar} from "flowbite-react";
 
-export default function MainNavigationLink(props) {
+export default function NavigationLink(props) {
     const location = useLocation();
     const clickHandler = useLinkClickHandler(props.to);
 

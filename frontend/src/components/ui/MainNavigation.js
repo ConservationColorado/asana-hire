@@ -1,6 +1,6 @@
 import {Navbar} from 'flowbite-react/lib/cjs/components';
 
-import MainNavigationLink from "./MainNavigationLink";
+import NavigationLink from "./NavigationLink";
 
 function MainNavigation() {
     return (
@@ -16,11 +16,11 @@ function MainNavigation() {
             </Navbar.Brand>
             <Navbar.Toggle/>
             <Navbar.Collapse>
-                <MainNavigationLink to="/" text="Home"/>
-                <MainNavigationLink to="/jobs" text="View jobs"/>
-                <MainNavigationLink to="/manage" text="Manage sync"/>
-                <MainNavigationLink to="/settings" text="Settings"/>
-                <MainNavigationLink to="/help" text="Help"/>
+                <NavigationLink to="/" text="Home"/>
+                <NavigationLink to="/jobs" text="View jobs"/>
+                <NavigationLink to="/manage" text="Manage sync"/>
+                <NavigationLink to="/settings" text="Settings"/>
+                <NavigationLink to="/help" text="Help"/>
             </Navbar.Collapse>
         </Navbar>
     )

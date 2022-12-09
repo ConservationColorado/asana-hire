@@ -1,5 +1,9 @@
+import {useState} from "react";
+
 function JobPage() {
-    return <div>Job page!</div>
+    return (
+        <div>Single job page!</div>
+    );
 }
 
 export default JobPage
