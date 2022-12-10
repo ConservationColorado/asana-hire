@@ -14,4 +14,7 @@ class JobController(
     @GetMapping
     fun getJobs(): Iterable<Job> = jobService.getJobs()
 
+    @GetMapping("/{jobId}")
+    fun getJob(@PathVariable jobId: String): Job = jobService.getJob(jobId)
+
 }
