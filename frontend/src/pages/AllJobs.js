@@ -1,6 +1,7 @@
 import JobList from "../components/jobs/JobList";
 import {useState} from "react";
 import {Spinner} from "flowbite-react";
+import BreadcrumbNav from "../components/ui/BreadcrumbNav";
 
 function AllJobsPage() {
     const [isLoading, setIsLoading] = useState(true);
@@ -29,6 +30,12 @@ function AllJobsPage() {
     } else {
         return (
             <div>
+                <BreadcrumbNav path={
+                    new Map([
+                        ["Home", "/"],
+                        ["View jobs", "/jobs"]
+                    ])
+                }/>
                 <JobList jobs={loadedJobs}/>
             </div>
         )

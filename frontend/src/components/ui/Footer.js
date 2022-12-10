@@ -4,11 +4,13 @@ function BottomFooter() {
     return (
         <Footer container={true}>
             <Footer.Copyright
-                href="/"
-                by="Conservation Colorado™"
-                year={2023}
+                href="https://github.com/OliverAbdulrahim/asana-hire/blob/main/LICENSE"
+                by="asana-hire for Conservation Colorado"
             />
             <Footer.LinkGroup>
+                <Footer.Link href="https://github.com/OliverAbdulrahim/asana-hire/blob/main/README.md">
+                    About
+                </Footer.Link>
                 <Footer.Link href="https://github.com/OliverAbdulrahim/asana-hire/blob/main/LICENSE">
                     License
                 </Footer.Link>
