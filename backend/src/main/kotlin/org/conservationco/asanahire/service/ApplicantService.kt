@@ -11,6 +11,7 @@ import org.conservationco.asanahire.domain.Job
 import org.conservationco.asanahire.repository.JobRepository
 import org.conservationco.asanahire.repository.getJob
 import org.conservationco.asanahire.requests.JobSyncRequest
+import org.conservationco.asanahire.requests.RequestState
 import org.conservationco.asanahire.util.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -26,8 +27,7 @@ class ApplicantService(
     private val applicantScope = CoroutineScope(SupervisorJob())
 
     private var jobIdsToLastCompletedSync: MutableMap<String, LocalDateTime> = HashMap()
-    private val ongoingSyncs: MutableSet<JobSyncRequest> = HashSet()
-    private val ongoingRejections: MutableMap<String, List<OriginalApplicant>> = HashMap()
+    private val ongoingSyncs: MutableMap<String, JobSyncRequest> = HashMap()
 
     fun getAllNeedingRejection(jobId: String): Any {
         var applicants = emptyList<RejectableApplicant>()
@@ -54,17 +54,28 @@ class ApplicantService(
         }
     }
 
-    fun trySync(jobId: String): JobSyncRequest {
-        val request = JobSyncRequest(jobId)
-        if (ongoingSyncs.contains(request)) return request
+    fun trySync(jobId: String): JobSyncRequest? =
+        when (val request = ongoingSyncs[jobId]) {
+            null -> launchNewSync(jobId)
+            else -> handleExistingRequest(jobId, request)
+        }
+
+    private fun handleExistingRequest(jobId: String, request: JobSyncRequest): JobSyncRequest? {
+        return if (request.isInProgress()) request
+        else ongoingSyncs.remove(jobId)
+    }
+
+    private fun launchNewSync(jobId: String): JobSyncRequest {
+        val newRequest = JobSyncRequest(jobId)
+        ongoingSyncs[jobId] = newRequest
         applicantScope.launch {
             withContext(Dispatchers.IO) {
                 jobRepository.getJob(jobId) { job ->
-                    launch { checkIfSyncNeeded(job, request) }
+                    launch { checkIfSyncNeeded(job, newRequest) }
                 }
             }
         }
-        return request
+        return newRequest
     }
 
     private suspend fun checkIfSyncNeeded(job: Job, jobSyncRequest: JobSyncRequest) = coroutineScope {
@@ -74,7 +85,7 @@ class ApplicantService(
             Project().apply { gid = job.managerSourceId }
         )
         if (snapshot.needsSyncing()) doApplicantSync(snapshot)
-        ongoingSyncs.remove(jobSyncRequest)
+        ongoingSyncs[job.id] = JobSyncRequest(job.id, RequestState.COMPLETE)
     }
 
     /**
@@ -93,10 +104,12 @@ class ApplicantService(
             val (originalApplicant, _, _, managerTask) = payload
             launch { destination.createTask(managerTask) }
             launch { originalApplicant.updateReceiptOfApplication(source) }
-            launch { mailer.emailReceiptOfApplication(
-                originalApplicant.preferredName,
-                originalApplicant.email,
-                jobTitle)
+            launch {
+                mailer.emailReceiptOfApplication(
+                    originalApplicant.preferredName,
+                    originalApplicant.email,
+                    jobTitle
+                )
             }
         }
         jobIdsToLastCompletedSync[source.gid] = snapshot.time
@@ -116,11 +129,11 @@ class ApplicantService(
         val (_, source, destination) = snapshot
         val newTasksFromEventStream = source.getNewTasks(true)
         val applicantsToSync =
-            // Multiple fallback measures:
+        // Multiple fallback measures:
             // Asana event stream is unreliable & always empty if no events polled in last 24hrs
             newTasksFromEventStream
                 .ifEmpty { source.getNewTasksBySearchOrByForce() }
-                .associateWith { it.convertToOriginalApplicant()}
+                .associateWith { it.convertToOriginalApplicant() }
                 .filter { it.value.needsSyncing() }
         return prepareTasksForSync(destination, applicantsToSync)
     }
