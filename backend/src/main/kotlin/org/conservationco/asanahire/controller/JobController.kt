@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/jobs")
+@CrossOrigin
 class JobController(
     private val jobService: JobService,
 ) {
