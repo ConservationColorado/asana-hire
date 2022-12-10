@@ -9,7 +9,8 @@ import SettingsPage from "./pages/SettingsPage";
 import HelpPage from "./pages/HelpPage";
 import Layout from "./components/ui/Layout";
 import HomePage from "./pages/HomePage";
-import AllJobsPage from "./pages/AllJobs";
+import AllJobsPage from "./pages/AllJobsPage";
+import JobPage from "./pages/JobPage";
 
 function App() {
     return (
@@ -22,6 +23,10 @@ function App() {
                 <Route
                     path='/jobs'
                     element={<AllJobsPage/>}
+                />
+                <Route
+                    path="/jobs/:id"
+                    element={<JobPage/>}
                 />
                 <Route
                     path='/manage'

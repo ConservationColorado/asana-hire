@@ -4,7 +4,7 @@ import Job from "./Job";
 function JobList(props) {
     return (
         <div>
-            <Card href={`/jobs/${props.id}`}>
+            <Card>
                 <Table>
                     <Table.Head>
                         <Table.HeadCell>

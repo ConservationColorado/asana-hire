@@ -18,7 +18,6 @@ function MainNavigation() {
             <Navbar.Collapse>
                 <NavigationLink to="/" text="Home"/>
                 <NavigationLink to="/jobs" text="View jobs"/>
-                <NavigationLink to="/manage" text="Manage sync"/>
                 <NavigationLink to="/settings" text="Settings"/>
                 <NavigationLink to="/help" text="Help"/>
             </Navbar.Collapse>
