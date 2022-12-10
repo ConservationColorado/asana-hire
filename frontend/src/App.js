@@ -11,17 +11,18 @@ import Layout from "./components/ui/Layout";
 import HomePage from "./pages/HomePage";
 import AllJobsPage from "./pages/AllJobsPage";
 import JobPage from "./pages/JobPage";
+import NotFound from "./components/ui/NotFound";
 
 function App() {
     return (
         <Layout>
             <Routes>
                 <Route
-                    path='/'
+                    path="/"
                     element={<HomePage/>}
                 />
                 <Route
-                    path='/jobs'
+                    path="/jobs"
                     element={<AllJobsPage/>}
                 />
                 <Route
@@ -29,16 +30,20 @@ function App() {
                     element={<JobPage/>}
                 />
                 <Route
-                    path='/manage'
+                    path="/manage"
                     element={<ManageJobsPage/>}
                 />
                 <Route
-                    path='/settings'
+                    path="/settings"
                     element={<SettingsPage/>}
                 />
                 <Route
-                    path='/help'
+                    path="/help"
                     element={<HelpPage/>}
+                />
+                <Route
+                    path="*"
+                    element={<NotFound/>}
                 />
             </Routes>
         </Layout>
