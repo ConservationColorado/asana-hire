@@ -1,5 +1,5 @@
-export function taskLinkString(projectId) {
-    return `https://app.asana.com/0/0/${projectId}`
+export function taskLinkString(taskId) {
+    return `https://app.asana.com/0/0/${taskId}`
 }
 
 export function projectLinkString(projectId) {

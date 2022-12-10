@@ -1,5 +1,4 @@
 import {Spinner} from "flowbite-react";
-import {ArrowTopRightOnSquareIcon} from "@heroicons/react/24/solid";
 
 export function loadingSpinner() {
     return (
