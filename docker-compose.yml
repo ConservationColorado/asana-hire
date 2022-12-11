@@ -8,7 +8,11 @@ services:
     ports:
       - "127.0.0.1:8080:8080"
     environment:
-      - SPRING.PROFILES.ACTIVE=default
+      - asana_access_token
+      - project_job_source_gid
+      - workspace_gid
+      - email_username
+      - email_password
   frontend:
     image: "asana-hire/frontend:0.0.1"
     container_name: asana-hire-frontend
