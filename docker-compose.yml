@@ -1,0 +1,18 @@
+version: '3'
+services:
+  backend:
+    image: "asana-hire/backend:0.0.1"
+    container_name: asana-hire-backend
+    build:
+      dockerfile: backend/Dockerfile
+    ports:
+      - "127.0.0.1:8080:8080"
+    environment:
+      - SPRING.PROFILES.ACTIVE=default
+  frontend:
+    image: "asana-hire/frontend:0.0.1"
+    container_name: asana-hire-frontend
+    build:
+      dockerfile: frontend/Dockerfile
+    ports:
+      - "127.0.0.1:80:80"
