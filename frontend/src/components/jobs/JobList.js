@@ -1,4 +1,4 @@
-import {Card, Table, Breadcrumb} from "flowbite-react"
+import {Button, Card, Table} from "flowbite-react"
 import Job from "./Job";
 
 function JobList(props) {
@@ -34,6 +34,9 @@ function JobList(props) {
                         />
                     )}
                 </Table>
+                <div className="flex flex-col items-center">
+                    <Button href="/jobs/new">Create a new job</Button>
+                </div>
             </Card>
         </div>
     );

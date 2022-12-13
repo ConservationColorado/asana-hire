@@ -12,6 +12,7 @@ import HomePage from "./pages/HomePage";
 import AllJobsPage from "./pages/AllJobsPage";
 import JobPage from "./pages/JobPage";
 import NotFound from "./components/ui/NotFound";
+import NewJobsPage from "./pages/NewJobsPage";
 
 function App() {
     return (
@@ -28,6 +29,10 @@ function App() {
                 <Route
                     path="/jobs/:id"
                     element={<JobPage/>}
+                />
+                <Route
+                    path="/jobs/new"
+                    element={<NewJobsPage/>}
                 />
                 <Route
                     path="/manage"
