@@ -12,7 +12,7 @@ function MainNavigation() {
                     alt="Conservation Colorado Logo"
                 />
                 <span
-                    className="self-center whitespace-nowrap text-xl font-semibold dark:text-white">Hiring admin console</span>
+                    className="self-center whitespace-nowrap text-xl font-semibold dark:text-white">Hiring Admin Console</span>
             </Navbar.Brand>
             <Navbar.Toggle/>
             <Navbar.Collapse>
