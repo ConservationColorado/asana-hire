@@ -6,8 +6,11 @@ import com.asana.models.Workspace
 import kotlinx.coroutines.*
 import org.conservationco.asana.asanaContext
 import org.conservationco.asana.util.AsanaTable
-import org.conservationco.asanahire.domain.*
 import org.conservationco.asanahire.domain.Job
+import org.conservationco.asanahire.domain.ManagerApplicant
+import org.conservationco.asanahire.domain.OriginalApplicant
+import org.conservationco.asanahire.domain.RejectableApplicant
+import org.conservationco.asanahire.domain.asana.ApplicantPayload
 import org.conservationco.asanahire.repository.JobRepository
 import org.conservationco.asanahire.repository.getJob
 import org.conservationco.asanahire.requests.JobSyncRequest
@@ -27,20 +30,20 @@ class ApplicantService(
     private val applicantScope = CoroutineScope(SupervisorJob())
 
     private var jobIdsToLastCompletedSync: MutableMap<String, LocalDateTime> = HashMap()
-    private val ongoingSyncs: MutableMap<String, JobSyncRequest> = HashMap()
+    private val ongoingSyncs: MutableMap<Long, JobSyncRequest> = HashMap()
 
-    fun getAllNeedingRejection(jobId: String): Any {
+    fun getAllNeedingRejection(jobId: Long): Any {
         var applicants = emptyList<RejectableApplicant>()
         jobRepository.getJob(jobId) { job -> applicants = rejectableApplicants(job) }
         return applicants
     }
 
-    fun rejectApplicant(jobId: String, applicant: RejectableApplicant) {
+    fun rejectApplicant(jobId: Long, applicant: RejectableApplicant) {
         applicantScope.launch {
             jobRepository.getJob(jobId) { job ->
                 launch {
                     asanaContext {
-                        val project = project(job.originalSourceId)
+                        val project = project(job.applicationProjectId)
                         task(applicant.originalGid)
                             .get()
                             .convertToOriginalApplicant()
@@ -54,35 +57,35 @@ class ApplicantService(
         }
     }
 
-    fun trySync(jobId: String): JobSyncRequest? =
+    fun trySync(jobId: Long): JobSyncRequest? =
         when (val request = ongoingSyncs[jobId]) {
             null -> launchNewSync(jobId)
             else -> handleExistingRequest(jobId, request)
         }
 
-    private fun handleExistingRequest(jobId: String, request: JobSyncRequest): JobSyncRequest? {
+    private fun handleExistingRequest(jobId: Long, request: JobSyncRequest): JobSyncRequest? {
         return if (request.isInProgress()) request
         else ongoingSyncs.remove(jobId)
     }
 
-    private fun launchNewSync(jobId: String): JobSyncRequest {
+    private fun launchNewSync(jobId: Long): JobSyncRequest {
         val newRequest = JobSyncRequest(jobId)
         ongoingSyncs[jobId] = newRequest
         applicantScope.launch {
             withContext(Dispatchers.IO) {
                 jobRepository.getJob(jobId) { job ->
-                    launch { checkIfSyncNeeded(job, newRequest) }
+                    launch { checkIfSyncNeeded(job) }
                 }
             }
         }
         return newRequest
     }
 
-    private suspend fun checkIfSyncNeeded(job: Job, jobSyncRequest: JobSyncRequest) = coroutineScope {
+    private suspend fun checkIfSyncNeeded(job: Job) = coroutineScope {
         val snapshot = SyncedProjectsSnapshot(
             job.title,
-            Project().apply { gid = job.originalSourceId },
-            Project().apply { gid = job.managerSourceId }
+            Project().apply { gid = job.applicationProjectId },
+            Project().apply { gid = job.interviewProjectId }
         )
         if (snapshot.needsSyncing()) doApplicantSync(snapshot)
         ongoingSyncs[job.id] = JobSyncRequest(job.id, RequestState.COMPLETE)
@@ -103,7 +106,6 @@ class ApplicantService(
         for (payload in applicants) {
             val (originalApplicant, _, _, managerTask) = payload
             launch { destination.createTask(managerTask) }
-            launch { originalApplicant.updateReceiptOfApplication(source) }
             launch {
                 mailer.emailReceiptOfApplication(
                     originalApplicant.preferredName,
@@ -111,6 +113,7 @@ class ApplicantService(
                     jobTitle
                 )
             }
+            launch { originalApplicant.updateReceiptOfApplication(source) }
         }
         jobIdsToLastCompletedSync[source.gid] = snapshot.time
     }
@@ -155,7 +158,6 @@ class ApplicantService(
         }
     }
 
-
     private fun Project.getNewTasksBySearchOrByForce(): List<Task> = asanaContext {
         val lastSync = jobIdsToLastCompletedSync[gid]
         return if (lastSync == null) getTasks(true)
@@ -167,15 +169,14 @@ class ApplicantService(
 
     private fun rejectableApplicants(job: Job): List<RejectableApplicant> {
         val originalApplicants = AsanaTable.tableFor<OriginalApplicant>(
-            job.originalSourceId,
+            job.applicationProjectId,
             deserializingFn = applicantDeserializingFn()
         )
         val managerApplicants = AsanaTable.tableFor<ManagerApplicant>(
-            job.managerSourceId,
+            job.interviewProjectId,
             deserializingFn = applicantDeserializingFn()
         )
         if (originalApplicants.size() == 0 || managerApplicants.size() == 0) return emptyList()
-
 
         val applicantsThatNeedRejection = managerApplicants
             .getAll()
@@ -191,7 +192,6 @@ class ApplicantService(
             .map {
                 RejectableApplicant(
                     it.id,
-                    applicantsThatNeedRejection[it.email]?.id.orEmpty(),
                     it.name,
                     it.preferredName,
                     it.email

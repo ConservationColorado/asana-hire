@@ -18,7 +18,6 @@ data class OriginalApplicant(
     @AsanaCustomField("How did you learn about us? (other)") var learnedAboutUsOther: String = "",
     @AsanaCustomField("Race / Ethnicity")                    var race: Array<String> = emptyArray(),
     @AsanaCustomField("Race / Ethnicity (other)")            var raceOther: String = "",
-    @AsanaCustomField("Manager alias")                       var managerAlias: String = "",
     @AsanaCustomField("Receipt sent?")                       var receiptStage: String = "",
     @AsanaCustomField("Rejection sent?")                     var rejectionStage: String = "",
 ) : Applicant, AsanaSerializable<OriginalApplicant> {

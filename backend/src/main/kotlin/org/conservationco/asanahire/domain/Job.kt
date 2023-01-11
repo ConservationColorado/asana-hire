@@ -1,17 +1,17 @@
 package org.conservationco.asanahire.domain
 
-import jakarta.persistence.*
+import jakarta.persistence.Entity
+import jakarta.persistence.GeneratedValue
+import jakarta.persistence.GenerationType
+import jakarta.persistence.Id
 import org.conservationco.asana.serialization.AsanaSerializable
-import org.conservationco.asana.serialization.customfield.AsanaCustomField
 
 @Entity
 open class Job : AsanaSerializable<Job> {
-    @Id open var id: String = ""
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    open var id: Long = 0L
     open var title: String = ""
-    @AsanaCustomField("Origin project gid")     open var originalSourceId: String = ""
-    @AsanaCustomField("Manager project gid")    open var managerSourceId: String = ""
-    @AsanaCustomField("Status")                 open var status: String = ""
-    @AsanaCustomField("Team")                   open var team: String = ""
-    @AsanaCustomField("Hiring manager email")   open var hiringManagerEmail: String = ""
-    @AsanaCustomField("Made hire?")             open var madeHire: String = ""
+    open var applicationProjectId: String = ""
+    open var interviewProjectId: String = ""
 }

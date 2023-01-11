@@ -67,6 +67,6 @@ class JobMailService(
         send(template)
     }
 
-    private fun readTemplate(name: String): String = File("src/main/resources/templates/$name").readText()
+    private fun readTemplate(name: String): String = File("backend/src/main/resources/templates/$name").readText()
 
 }

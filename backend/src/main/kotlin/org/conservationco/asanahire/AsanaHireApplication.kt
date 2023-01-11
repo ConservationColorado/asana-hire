@@ -1,9 +1,9 @@
 package org.conservationco.asanahire
 
-import com.asana.models.Project
+import com.asana.models.Portfolio
 import com.asana.models.Workspace
 import net.axay.simplekotlinmail.delivery.mailerBuilder
-import org.conservationco.asanahire.domain.JobSource
+import org.conservationco.asanahire.domain.asana.JobSource
 import org.conservationco.asanahire.domain.mail.Protocol
 import org.simplejavamail.api.mailer.Mailer
 import org.springframework.boot.autoconfigure.SpringBootApplication
@@ -14,7 +14,8 @@ import org.springframework.context.annotation.Bean
 class AsanaHireApplication {
     @Bean
     fun jobSource() = JobSource().apply {
-        project = Project().apply { gid = env("project_job_source_gid") }
+        applicationPortfolio = Portfolio().apply { gid = env("application_portfolio_gid") }
+        interviewPortfolio = Portfolio().apply { gid = env("interview_portfolio_gid") }
     }
 
     @Bean

@@ -4,8 +4,8 @@ import org.conservationco.asanahire.domain.Job
 import org.conservationco.asanahire.exception.NoSuchJobException
 import org.springframework.data.repository.CrudRepository
 
-interface JobRepository : CrudRepository<Job, String>
+interface JobRepository : CrudRepository<Job, Long>
 
-fun JobRepository.getJob(jobId: String, runIfPresent: (Job) -> Unit) =
+fun JobRepository.getJob(jobId: Long, runIfPresent: (Job) -> Unit) =
     findById(jobId)
         .ifPresentOrElse(runIfPresent) { throw NoSuchJobException() }
