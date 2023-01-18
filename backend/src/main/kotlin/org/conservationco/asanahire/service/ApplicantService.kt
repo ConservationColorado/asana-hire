@@ -10,7 +10,7 @@ import org.conservationco.asanahire.domain.Job
 import org.conservationco.asanahire.domain.ManagerApplicant
 import org.conservationco.asanahire.domain.OriginalApplicant
 import org.conservationco.asanahire.domain.RejectableApplicant
-import org.conservationco.asanahire.domain.asana.ApplicantPayload
+import org.conservationco.asanahire.domain.asana.ApplicantSyncPayload
 import org.conservationco.asanahire.repository.JobRepository
 import org.conservationco.asanahire.repository.getJob
 import org.conservationco.asanahire.requests.JobSyncRequest
@@ -41,19 +41,25 @@ class ApplicantService(
     fun rejectApplicant(jobId: Long, applicant: RejectableApplicant) {
         applicantScope.launch {
             jobRepository.getJob(jobId) { job ->
-                launch {
-                    asanaContext {
-                        val project = project(job.applicationProjectId)
-                        task(applicant.originalGid)
-                            .get()
-                            .convertToOriginalApplicant()
-                            .updateRejectionStatus(project)
-                    }
-                }
-                launch {
-                    mailer.emailRejection(applicant.name, applicant.email, job.title)
-                }
+                launch { updateRejectionStatusFor(job, applicant) }
+                launch { sendRejectionEmail(applicant, job) }
             }
+        }
+    }
+
+    private suspend fun sendRejectionEmail(applicant: RejectableApplicant, job: Job) =
+        mailer.emailRejection(applicant.preferredName, applicant.email, job.title)
+
+    private fun updateRejectionStatusFor(
+        job: Job,
+        applicant: RejectableApplicant
+    ) {
+        asanaContext {
+            val project = project(job.applicationProjectId)
+            task(applicant.originalGid)
+                .get()
+                .convertToOriginalApplicant()
+                .updateRejectionStatus(project)
         }
     }
 
@@ -87,8 +93,17 @@ class ApplicantService(
             Project().apply { gid = job.applicationProjectId },
             Project().apply { gid = job.interviewProjectId }
         )
-        if (snapshot.needsSyncing()) doApplicantSync(snapshot)
+        if (snapshot.needsSyncing()) startProjectSync(snapshot)
         ongoingSyncs[job.id] = JobSyncRequest(job.id, RequestState.COMPLETE)
+    }
+
+    private suspend fun startProjectSync(snapshot: SyncedProjectsSnapshot) = coroutineScope {
+        val (jobTitle, source, destination) = snapshot
+        val applicants = getNewApplicants(snapshot)
+        for (payload in applicants) {
+            launch { syncSingleApplicant(payload, destination, jobTitle, source) }
+        }
+        jobIdsToLastCompletedSync[source.gid] = snapshot.time
     }
 
     /**
@@ -100,62 +115,60 @@ class ApplicantService(
      *
      * These are completed asynchronously with no guarantees of completion order.
      */
-    private suspend fun doApplicantSync(snapshot: SyncedProjectsSnapshot) = coroutineScope {
-        val (jobTitle, source, destination) = snapshot
-        val applicants = getNewApplicants(snapshot)
-        for (payload in applicants) {
-            val (originalApplicant, _, _, managerTask) = payload
-            launch { destination.createTask(managerTask) }
-            launch {
-                mailer.emailReceiptOfApplication(
-                    originalApplicant.preferredName,
-                    originalApplicant.email,
-                    jobTitle
-                )
-            }
-            launch { originalApplicant.updateReceiptOfApplication(source) }
+    private fun CoroutineScope.syncSingleApplicant(
+        payload: ApplicantSyncPayload,
+        destination: Project,
+        jobTitle: String,
+        source: Project
+    ) {
+        val (originalApplicant, interviewApplicant) = payload
+        launch { addToInterviewProject(interviewApplicant, destination) }
+        launch { sendReceiptEmail(originalApplicant, jobTitle) }
+        launch { originalApplicant.updateReceiptOfApplication(source) }
+    }
+
+    private suspend fun sendReceiptEmail(
+        originalApplicant: OriginalApplicant,
+        jobTitle: String
+    ) {
+        mailer.emailReceiptOfApplication(
+            originalApplicant.preferredName,
+            originalApplicant.email,
+            jobTitle
+        )
+    }
+
+    private fun addToInterviewProject(
+        interviewApplicant: ManagerApplicant,
+        destination: Project
+    ) {
+        asanaContext {
+            val task = interviewApplicant.convertToTask(destination, applicantSerializingFn())
+            destination.createTask(task)
         }
-        jobIdsToLastCompletedSync[source.gid] = snapshot.time
     }
 
-    private fun Project.createTask(taskToCreate: Task) = asanaContext {
-        createTask(taskToCreate)
-    }
-
-    private fun OriginalApplicant.updateReceiptOfApplication(source: Project) =
-        copyAndUpdate(source) { receiptStage = "✅" }
-
-    private fun OriginalApplicant.updateRejectionStatus(source: Project) =
-        copyAndUpdate(source) { rejectionStage = "✅" }
-
-    private fun getNewApplicants(snapshot: SyncedProjectsSnapshot): List<ApplicantPayload> = asanaContext {
-        val (_, source, destination) = snapshot
+    /**
+     * Function has multiple fallback measures: Asana event stream is somewhat unreliable & always empty if no events 
+     * polled in last 24hrs.
+     */
+    private fun getNewApplicants(snapshot: SyncedProjectsSnapshot): List<ApplicantSyncPayload> = asanaContext {
+        val (_, source, _) = snapshot
         val newTasksFromEventStream = source.getNewTasks(true)
+        // Multiple fallback measures since Asana event stream always empty if no events polled in last 24hrs
         val applicantsToSync =
-        // Multiple fallback measures:
-            // Asana event stream is unreliable & always empty if no events polled in last 24hrs
             newTasksFromEventStream
                 .ifEmpty { source.getNewTasksBySearchOrByForce() }
-                .associateWith { it.convertToOriginalApplicant() }
-                .filter { it.value.needsSyncing() }
-        return prepareTasksForSync(destination, applicantsToSync)
-    }
-
-    private fun prepareTasksForSync(
-        destination: Project,
-        originalTasksToApplicants: Map<Task, OriginalApplicant>
-    ) = asanaContext {
-        originalTasksToApplicants.map {
-            val (originalTask, originalApplicant) = it
-            val managerApplicant = originalTask.convertToManagerApplicant()
-            val managerTask = managerApplicant.convertToTask(destination, applicantSerializingFn())
-            ApplicantPayload(
-                originalApplicant,
-                managerApplicant,
-                originalTask,
-                managerTask
-            )
-        }
+                .asSequence()
+                .map { it to it.convertToOriginalApplicant() }
+                .filter { it.second.needsSyncing() }
+                .map { 
+                    ApplicantSyncPayload(
+                        it.second, 
+                        it.first.convertToManagerApplicant()
+                    )
+                }.toList()
+        return applicantsToSync
     }
 
     private fun Project.getNewTasksBySearchOrByForce(): List<Task> = asanaContext {

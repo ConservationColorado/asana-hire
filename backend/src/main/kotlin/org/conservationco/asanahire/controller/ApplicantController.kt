@@ -22,6 +22,14 @@ class ApplicantController(
         @RequestBody applicant: RejectableApplicant
     ) = applicantService.rejectApplicant(jobId, applicant)
 
+    @PutMapping("{jobId}/batch/reject")
+    suspend fun rejectApplicants(
+        @PathVariable jobId: Long,
+        @RequestBody applicants: List<RejectableApplicant>
+    )  {
+        for (applicant in applicants) applicantService.rejectApplicant(jobId, applicant)
+    }
+
     @PutMapping("/{jobId}/sync")
     suspend fun sync(
         @PathVariable jobId: Long
