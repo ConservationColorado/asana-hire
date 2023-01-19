@@ -101,7 +101,7 @@ class ApplicantService(
         val (jobTitle, source, destination) = snapshot
         val applicants = getNewApplicants(snapshot)
         for (payload in applicants) {
-            launch { syncSingleApplicant(payload, destination, jobTitle, source) }
+            syncSingleApplicant(payload, destination, jobTitle, source)
         }
         jobIdsToLastCompletedSync[source.gid] = snapshot.time
     }
@@ -113,18 +113,18 @@ class ApplicantService(
      * * Emails a receipt of application confirmation message to the applicant
      * * Update the original task's receipt stage
      *
-     * These are completed asynchronously with no guarantees of completion order.
+     * These are completed synchronously with guaranteed completion order.
      */
-    private fun CoroutineScope.syncSingleApplicant(
+    private suspend fun syncSingleApplicant(
         payload: ApplicantSyncPayload,
         destination: Project,
         jobTitle: String,
         source: Project
     ) {
         val (originalApplicant, interviewApplicant) = payload
-        launch { addToInterviewProject(interviewApplicant, destination) }
-        launch { sendReceiptEmail(originalApplicant, jobTitle) }
-        launch { originalApplicant.updateReceiptOfApplication(source) }
+        addToInterviewProject(interviewApplicant, destination)
+        sendReceiptEmail(originalApplicant, jobTitle)
+        originalApplicant.updateReceiptOfApplication(source)
     }
 
     private suspend fun sendReceiptEmail(

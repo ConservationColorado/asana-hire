@@ -1,10 +1,8 @@
 package org.conservationco.asanahire.domain
 
 import com.asana.models.Attachment
-import org.conservationco.asana.asanaContext
 import org.conservationco.asana.serialization.AsanaSerializable
 import org.conservationco.asana.serialization.customfield.AsanaCustomField
-import org.conservationco.asanahire.util.applicantDeserializingFn
 
 /**
  * Data class for POSTing [OriginalApplicant] objects to a manager context.
