@@ -79,7 +79,7 @@
         <dependency>
             <groupId>com.github.OliverAbdulrahim</groupId>
             <artifactId>kotlin-asana</artifactId>
-            <version>2d972e5857</version>
+            <version>69f2199908</version>
         </dependency>
         <dependency>
             <groupId>org.jetbrains.kotlinx</groupId>
