@@ -1,7 +1,6 @@
 package org.conservationco.asanahire.controller
 
 import kotlinx.coroutines.Deferred
-import org.conservationco.asana.extensions.events.Event
 import org.conservationco.asanahire.domain.ApplicantEvent
 import org.conservationco.asanahire.domain.RejectableApplicant
 import org.conservationco.asanahire.service.ApplicantService
@@ -14,6 +13,12 @@ import java.time.LocalDateTime
 class ApplicantController(
     private val applicantService: ApplicantService,
 ) {
+
+    @GetMapping("/{jobId}/new")
+    suspend fun getNewApplicants(
+        @PathVariable jobId: Long,
+        @RequestBody time: LocalDateTime
+    ): Deferred<List<ApplicantEvent>> = applicantService.getNewApplicants(jobId, time)
 
     @GetMapping("/{jobId}/reject")
     suspend fun getRejectableApplicants(

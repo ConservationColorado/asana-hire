@@ -1,27 +1,38 @@
 package org.conservationco.asanahire.service
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.launch
+import com.asana.models.Task
+import com.asana.models.Workspace
+import kotlinx.coroutines.*
 import org.conservationco.asana.asanaContext
 import org.conservationco.asana.util.AsanaTable
-import org.conservationco.asanahire.domain.InterviewApplicant
+import org.conservationco.asanahire.domain.*
 import org.conservationco.asanahire.domain.Job
-import org.conservationco.asanahire.domain.OriginalApplicant
-import org.conservationco.asanahire.domain.RejectableApplicant
 import org.conservationco.asanahire.repository.JobRepository
 import org.conservationco.asanahire.repository.getJob
 import org.conservationco.asanahire.util.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import java.time.LocalDateTime
 
 @Service
 class ApplicantService(
     private val jobRepository: JobRepository,
     @Autowired private val mailer: JobMailService,
+    @Autowired private val workspace: Workspace,
 ) {
 
     private val applicantScope = CoroutineScope(SupervisorJob())
+
+    fun getNewApplicants(jobId: Long, time: LocalDateTime): Deferred<List<ApplicantEvent>> = asanaContext {
+        return applicantScope.async {
+            workspace
+                .search(
+                    "created_at.after" to time.toString(),
+                    "projects.any" to jobId.toString()
+                )
+                .map(Task::toApplicantEvent)
+        }
+    }
 
     fun getAllNeedingRejection(jobId: Long): Any {
         var applicants = emptyList<RejectableApplicant>()
