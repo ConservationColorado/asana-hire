@@ -34,11 +34,10 @@ class ApplicantService(
         }
     }
 
-    fun getAllNeedingRejection(jobId: Long): Any {
-        var applicants = emptyList<RejectableApplicant>()
-        jobRepository.getJob(jobId) { job -> applicants = rejectableApplicants(job) }
-        return applicants
-    }
+    fun getAllNeedingRejection(jobId: Long): Deferred<List<RejectableApplicant>> =
+        jobRepository.getJob(jobId) { job ->
+            return@getJob applicantScope.async { rejectableApplicants(job) }
+        }
 
     fun rejectApplicant(applicant: RejectableApplicant) {
         applicantScope.launch {
