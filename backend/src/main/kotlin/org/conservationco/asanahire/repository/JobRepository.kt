@@ -6,6 +6,7 @@ import org.springframework.data.repository.CrudRepository
 
 interface JobRepository : CrudRepository<Job, Long>
 
-fun JobRepository.getJob(jobId: Long, runIfPresent: (Job) -> Unit) =
+fun <E> JobRepository.getJob(jobId: Long, runIfPresent: (Job) -> E) =
     findById(jobId)
-        .ifPresentOrElse(runIfPresent) { throw NoSuchJobException() }
+        .map { runIfPresent(it) }
+        .orElseThrow { throw NoSuchJobException() }
