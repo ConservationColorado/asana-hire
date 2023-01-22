@@ -4,7 +4,7 @@ import com.asana.models.Project
 import com.asana.models.Task
 import org.conservationco.asana.asanaContext
 import org.conservationco.asanahire.domain.Applicant
-import org.conservationco.asanahire.domain.ManagerApplicant
+import org.conservationco.asanahire.domain.InterviewApplicant
 import org.conservationco.asanahire.domain.OriginalApplicant
 
 // Serialization functions
@@ -43,7 +43,7 @@ internal fun OriginalApplicant.communicate() {
 
 internal fun OriginalApplicant.needsSyncing(): Boolean = receiptStage.isEmpty()
 
-internal fun ManagerApplicant.isInterviewing(): Boolean = interviewStage.isNotEmpty() || interviewSubstage.isNotEmpty()
+internal fun InterviewApplicant.isInterviewing(): Boolean = interviewStage.isNotEmpty() || interviewSubstage.isNotEmpty()
 
 /**
  * Use this function to ensure that no communication is sent *after* the receiver applicant is rejected. If a candidate
@@ -59,13 +59,13 @@ internal fun OriginalApplicant.hasBeenRejected(): Boolean = rejectionStage.isNot
  * If applicant is in process of interview, do not reject them either! If an applicant was already rejected do not
  * message them again.
  */
-internal fun ManagerApplicant.needsRejection(): Boolean = hiringManagerRating == "No" && !isInterviewing()
+internal fun InterviewApplicant.needsRejection(): Boolean = hiringManagerRating == "No" && !isInterviewing()
 
 // Transformation functions
 
-internal fun OriginalApplicant.toManagerApplicant(): ManagerApplicant {
+internal fun OriginalApplicant.toManagerApplicant(): InterviewApplicant {
     val copy = copy()
-    return ManagerApplicant(
+    return InterviewApplicant(
         id = copy.id,
         name = copy.name,
         documents = copy.documents,
@@ -83,7 +83,7 @@ internal fun Task.convertToOriginalApplicant() = asanaContext {
 }
 
 internal fun Task.convertToManagerApplicant() = asanaContext {
-    convertTo(ManagerApplicant::class, applicantDeserializingFn())
+    convertTo(InterviewApplicant::class, applicantDeserializingFn())
 }
 
 internal fun OriginalApplicant.copyAndUpdate(

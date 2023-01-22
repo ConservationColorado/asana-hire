@@ -7,7 +7,7 @@ import org.conservationco.asana.serialization.customfield.AsanaCustomField
 /**
  * Data class for POSTing [OriginalApplicant] objects to a manager context.
  */
-data class ManagerApplicant(
+data class InterviewApplicant(
     override var id: String = "",
     override var name: String = "",
     override var documents: Collection<Attachment> = emptyList(),
@@ -20,4 +20,4 @@ data class ManagerApplicant(
     @AsanaCustomField("Rating")             var hiringManagerRating: String = "",
     @AsanaCustomField("Interview stage")    var interviewStage: String = "",
     @AsanaCustomField("Interview substage") var interviewSubstage: String = "",
-) : Applicant, AsanaSerializable<ManagerApplicant>
+) : Applicant, AsanaSerializable<InterviewApplicant>
