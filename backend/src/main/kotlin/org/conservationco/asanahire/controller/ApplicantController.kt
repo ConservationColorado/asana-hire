@@ -1,8 +1,12 @@
 package org.conservationco.asanahire.controller
 
+import kotlinx.coroutines.Deferred
+import org.conservationco.asana.extensions.events.Event
+import org.conservationco.asanahire.domain.ApplicantEvent
 import org.conservationco.asanahire.domain.RejectableApplicant
 import org.conservationco.asanahire.service.ApplicantService
 import org.springframework.web.bind.annotation.*
+import java.time.LocalDateTime
 
 @RestController
 @RequestMapping("/applicants")
@@ -11,28 +15,19 @@ class ApplicantController(
     private val applicantService: ApplicantService,
 ) {
 
-    @PutMapping("/{jobId}/need_rejection")
+    @GetMapping("/{jobId}/reject")
     suspend fun getRejectableApplicants(
         @PathVariable jobId: Long
     ) = applicantService.getAllNeedingRejection(jobId)
 
-    @PutMapping("/{jobId}/reject")
+    @PutMapping("/reject")
     suspend fun rejectApplicant(
-        @PathVariable jobId: Long,
         @RequestBody applicant: RejectableApplicant
-    ) = applicantService.rejectApplicant(jobId, applicant)
+    ) = applicantService.rejectApplicant(applicant)
 
-    @PutMapping("{jobId}/batch/reject")
+    @PutMapping("/reject-all")
     suspend fun rejectApplicants(
-        @PathVariable jobId: Long,
         @RequestBody applicants: List<RejectableApplicant>
-    )  {
-        for (applicant in applicants) applicantService.rejectApplicant(jobId, applicant)
-    }
-
-    @PutMapping("/{jobId}/sync")
-    suspend fun sync(
-        @PathVariable jobId: Long
-    ) = applicantService.trySync(jobId)
+    ) = applicants.forEach { applicantService.rejectApplicant(it) }
 
 }
