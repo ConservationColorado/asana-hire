@@ -8,7 +8,7 @@ import org.conservationco.asana.asanaContext
 import org.conservationco.asanahire.domain.Job
 import org.conservationco.asanahire.domain.InterviewApplicant
 import org.conservationco.asanahire.domain.OriginalApplicant
-import org.conservationco.asanahire.domain.asana.ApplicantSyncPayload
+import org.conservationco.asanahire.domain.asana.ApplicantSyncPair
 import org.conservationco.asanahire.repository.JobRepository
 import org.conservationco.asanahire.repository.getJob
 import org.conservationco.asanahire.requests.JobSyncRequest
@@ -69,8 +69,8 @@ class SyncService(
     private suspend fun startProjectSync(snapshot: SyncedProjectsSnapshot) = coroutineScope {
         val (jobTitle, source, destination) = snapshot
         val applicants = getNewApplicants(snapshot)
-        for (payload in applicants) {
-            syncSingleApplicant(payload, destination, jobTitle, source)
+        for (pair in applicants) {
+            syncSingleApplicant(pair, destination, jobTitle, source)
         }
         jobIdsToLastCompletedSync[source.gid] = snapshot.time
     }
@@ -85,12 +85,12 @@ class SyncService(
      * These are completed synchronously with guaranteed completion order.
      */
     private suspend fun syncSingleApplicant(
-        payload: ApplicantSyncPayload,
+        applicantPair: ApplicantSyncPair,
         destination: Project,
         jobTitle: String,
         source: Project
     ) {
-        val (originalApplicant, interviewApplicant) = payload
+        val (originalApplicant, interviewApplicant) = applicantPair
         addToInterviewProject(interviewApplicant, destination)
         sendReceiptEmail(originalApplicant, jobTitle)
         originalApplicant.updateReceiptOfApplication(source)
@@ -121,23 +121,23 @@ class SyncService(
      * Function has multiple fallback measures: Asana event stream is somewhat unreliable & always empty if no events
      * polled in last 24hrs.
      */
-    internal fun getNewApplicants(snapshot: SyncedProjectsSnapshot): List<ApplicantSyncPayload> = asanaContext {
+    internal fun getNewApplicants(snapshot: SyncedProjectsSnapshot): List<ApplicantSyncPair> = asanaContext {
         val (_, source, _) = snapshot
         val newTasksFromEventStream = source.getNewTasks(true)
         // Multiple fallback measures since Asana event stream always empty if no events polled in last 24hrs
-        val applicantsToSync =
+        val applicantPairsForSync =
             newTasksFromEventStream
                 .ifEmpty { source.getNewTasksBySearchOrByForce() }
                 .asSequence()
                 .map { it to it.convertToOriginalApplicant() }
                 .filter { it.second.needsSyncing() }
                 .map {
-                    ApplicantSyncPayload(
+                    ApplicantSyncPair(
                         it.second,
                         it.first.convertToManagerApplicant()
                     )
                 }.toList()
-        return applicantsToSync
+        return applicantPairsForSync
     }
 
     private fun Project.getNewTasksBySearchOrByForce(): List<Task> = asanaContext {
