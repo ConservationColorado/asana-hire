@@ -36,3 +36,10 @@
     height: auto;
     display: inline-block;
 }
+
+.main-content {
+    display: 'flex';
+    alignItems: 'center';
+    justifyContent: 'center';
+
+}

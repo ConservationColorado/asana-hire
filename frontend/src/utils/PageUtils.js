@@ -2,14 +2,10 @@ import {Spinner} from "flowbite-react";
 
 export function loadingSpinner() {
     return (
-        <div className="text-center">
+        <div className="text-center pt-2">
             <section>
-                <Spinner
-                    aria-label="Center-aligned loading indicator"
-                    size="xl"
-                />
+                <Spinner size="lg"/> Loading...
             </section>
-            <p className="pt-2">Loading...</p>
         </div>
     );
 }

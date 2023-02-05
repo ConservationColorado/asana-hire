@@ -1,36 +1,27 @@
-import JobList from "../components/jobs/JobList";
-import {useState} from "react";
+import JobDropdown from "../components/jobs/JobDropdown";
 import BreadcrumbNav from "../components/ui/BreadcrumbNav";
-import {getJsonPromise, loadingSpinner} from "../utils/PageUtils";
-import {useEffect} from "react";
-import {Button} from "flowbite-react";
+import CompleteJob from "../components/jobs/CompleteJob";
+import {useState} from "react";
 
-function AllJobsPage() {
-    const [isLoading, setIsLoading] = useState(true);
-    const [loadedJobs, setLoadedJobs] = useState([]);
+function AllJobsPage(props) {
+    const [loadedJob, setLoadedJob] = useState([]);
 
-    useEffect(() => {
-        getJsonPromise("http://localhost:8080/jobs")
-            .then((data) => {
-                setIsLoading(false)
-                setLoadedJobs(data)
-            });
-    }, []);
+    return (
+        <div>
+            <BreadcrumbNav path={
+                new Map([
+                    ["Home", "/"],
+                    ["View jobs", "/jobs"],
+                    [<JobDropdown selected="Select a position" onDropdownChange={(e) => selectPosition(e)}/>, "#"]
+                ])
+            }/>
+            {loadedJob}
+        </div>
+    )
 
-    if (isLoading) {
-        return loadingSpinner();
-    } else {
-        return (
-            <div>
-                <BreadcrumbNav path={
-                    new Map([
-                        ["Home", "/"],
-                        ["View jobs", "/jobs"]
-                    ])
-                }/>
-                <JobList jobs={loadedJobs}/>
-            </div>
-        )
+    function selectPosition(e) {
+        const jobId = e.target.selectedIndex
+        setLoadedJob(<CompleteJob id={jobId}/>)
     }
 }
 

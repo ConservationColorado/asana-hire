@@ -1,5 +1,6 @@
 import {Button, Card} from "flowbite-react";
 import {ArrowRightIcon} from "@heroicons/react/24/solid";
+import {Link} from 'react-router-dom';
 
 function HomePage() {
     return (
@@ -14,12 +15,15 @@ function HomePage() {
                             Easily manage and automate our positions we're hiring for. <br/> Designed to make your life
                             easy, start to finish!
                         </p>
-                        <Button
-                            href="/jobs"
-                            className="inline-flex px-5 py-1 text-white rounded-lg bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 dark:focus:ring-primary-900">
-                            Get started
-                            <ArrowRightIcon className="h-6 w-10"/>
-                        </Button>
+                        <Link
+                            to="/jobs"
+                        >
+                            <Button
+                                className="inline-flex px-5 py-1 text-white rounded-lg bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 dark:focus:ring-primary-900">
+                                Get started
+                                <ArrowRightIcon className="h-6 w-10"/>
+                            </Button>
+                        </Link>
                     </div>
                 </div>
             </Card>

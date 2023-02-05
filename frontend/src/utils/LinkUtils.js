@@ -13,3 +13,10 @@ export function emailLinkString(email) {
 export function driveSearchString(jobTitle) {
     return `https://drive.google.com/drive/u/0/search?q=type:folder%20title:"${jobTitle}"`;
 }
+
+export function websiteJobLink(jobTitle) {
+    if (jobTitle) {
+        let pageSlug = jobTitle.replaceAll(" ", "-").toLowerCase();
+        return `https://conservationco.org/${pageSlug}`;
+    }
+}
