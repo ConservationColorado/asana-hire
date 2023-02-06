@@ -10,6 +10,15 @@ export function loadingSpinner() {
     );
 }
 
+export function plainSpinner(message) {
+    return (
+        <div className="text-center pt-1">
+            <div className="pb-2"><Spinner size="xl"/></div>
+            <div>{message}</div>
+        </div>
+    );
+}
+
 export function getJsonPromise(url) {
     return fetch(
         url,

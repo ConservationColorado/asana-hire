@@ -1,6 +1,7 @@
 import {Card, Sidebar} from "flowbite-react";
 import {ArrowTopRightOnSquareIcon, BoltIcon, FolderOpenIcon} from "@heroicons/react/24/solid";
 import {driveSearchString, projectLinkString, websiteJobLink} from "../../utils/LinkUtils";
+import RejectionModal from "../applicants/RejectionModal";
 
 function JobCard({job}) {
     return (
@@ -39,11 +40,15 @@ function JobCard({job}) {
                                 icon={BoltIcon}
                                 label="Actions"
                             >
-                                <Sidebar.Item href="#">
+                                <Sidebar.Item
+                                    href="#"
+                                >
                                     Sync this job
                                 </Sidebar.Item>
-                                <Sidebar.Item href="#">
-                                    Reject applicants
+                                <Sidebar.Item
+                                    href="#"
+                                >
+                                    <RejectionModal job={job}/>
                                 </Sidebar.Item>
                             </Sidebar.Collapse>
                         </Sidebar.ItemGroup>
