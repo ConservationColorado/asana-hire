@@ -20,13 +20,12 @@ export function plainSpinner(message) {
 }
 
 export function getJsonPromise(url) {
-    return fetch(
-        url,
-        {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json"
-            }
+    const options = {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json"
         }
-    ).then((response) => response.json())
+    }
+    return fetch(url, options)
+        .then((response) => response.json());
 }

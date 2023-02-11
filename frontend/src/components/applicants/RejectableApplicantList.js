@@ -3,10 +3,10 @@ import {useEffect, useState} from "react";
 import {getJsonPromise} from '../../utils/PageUtils';
 import {plainSpinner} from '../../utils/PageUtils';
 import RejectableApplicant from './RejectableApplicant';
-import {Table} from 'flowbite-react';
+import {Button, Table} from 'flowbite-react';
 import {ExclamationTriangleIcon} from '@heroicons/react/24/solid';
 
-function RejectableApplicantList({job}) {
+function RejectableApplicantList({job, close, closeAndConfirm}) {
     const [isLoading, setIsLoading] = useState(true);
     const [rejectableApplicants, setRejectableApplicants] = useState([]);
 
@@ -56,16 +56,13 @@ function RejectableApplicantList({job}) {
 
     function nonEmptyApplicantList(applicants) {
         return (
-            <div className="space-y-4">
+            <div className="space-y-5">
                 <div>
                     We've found these applicants who the hiring manager is not looking to interview for this position.
                     We've excluded any candidates who we've already interviewed.
                 </div>
-                <div>
-                    <Link to="/help#release">To learn more about the candidate release process, click here.</Link>
-                </div>
-                <div className="md:flex h-screen overflow-hidden max-h-64">
-                    <Table striped={true} className="">
+                <div className="justify-center overflow-hidden md:flex max-h-64">
+                    <Table striped={true}>
                         <Table.Head className="fixed-table-head">
                             <Table.HeadCell>
                                 Full name
@@ -84,16 +81,31 @@ function RejectableApplicantList({job}) {
                         </Table.Body>
                     </Table>
                 </div>
-                <div className="pt-3 grid grid-cols-12">
-                    <ExclamationTriangleIcon fill="#DC4C64"/>
-                    <div className="pl-2 col-span-10">
-                        <strong>Caution:</strong> You can not reverse or stop this process once it's started!
-                        Please ensure that you <em>really</em> want to release all these applicants.
-                    </div>
+                <div>
+                    <strong>⚠️ Caution:</strong> You can't reverse or stop this process once it's started!
+                    Please ensure that you <em>really</em> want to release all these applicants.
+                </div>
+                <div>
+                    <Link to="/help#release">To learn more about the candidate release process, click here.</Link>
+                </div>
+                <div className="justify-center md:flex space-x-3">
+                    <Button color="failure" onClick={function() { rejectAll(applicants) }}>I understand, please continue.</Button>
+                    <Button color="light" onClick={close}>Cancel</Button>
                 </div>
             </div>
         );
     }
+
+    function rejectAll(applicants) {
+        const options = {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(applicants)
+        };
+        fetch(`http://localhost:8080/applicants/reject-all`, options)
+        closeAndConfirm();
+    }
+
 }
 
 export default RejectableApplicantList

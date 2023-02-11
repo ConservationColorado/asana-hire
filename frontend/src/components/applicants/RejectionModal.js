@@ -1,35 +1,38 @@
-import React, {Fragment, useState} from 'react'
+import React, {useState} from 'react'
 import {Button, Modal} from 'flowbite-react'
 import RejectableApplicantList from '../applicants/RejectableApplicantList'
+import RejectionNotification from './RejectionNotification';
 
 function RejectionModal({job}) {
     const [isShown, setIsShown] = useState();
     return (
         <div>
-            <div onClick={onClick}>
+            <div onClick={toggleModal}>
                 Reject applicants
             </div>
             <Modal
                 show={isShown}
-                onClose={onClick}
+                onClose={toggleModal}
             >
                 <Modal.Header>
                     Release candidates from the {job.title} hiring process
                 </Modal.Header>
                 <Modal.Body>
-                    <RejectableApplicantList job={job}/>
+                    <RejectableApplicantList job={job} close={toggleModal} closeAndConfirm={toggleAndReject}/>
                 </Modal.Body>
             </Modal>
         </div>
     );
 
-    function onClick() {
-        setIsShown(!isShown)
+    function toggleModal() {
+        setIsShown(!isShown);
     }
 
-    function onClose() {
-        // exit process
+    function toggleAndReject() {
+        toggleModal();
+        return <RejectionNotification job={job}/>
     }
+
 }
 
 export default RejectionModal
