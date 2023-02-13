@@ -12,7 +12,7 @@ function CompleteJob({id}) {
                 setIsLoading(false)
                 setJob(data)
             });
-    }, [id]);
+    }, []);
 
     if (isLoading) {
         return loadingSpinner();

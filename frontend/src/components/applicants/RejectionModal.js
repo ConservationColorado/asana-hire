@@ -18,7 +18,9 @@ function RejectionModal({job}) {
                     Release candidates from the {job.title} hiring process
                 </Modal.Header>
                 <Modal.Body>
-                    <RejectableApplicantList job={job} close={toggleModal} closeAndConfirm={toggleAndReject}/>
+                    {isShown &&
+                        <RejectableApplicantList job={job} close={toggleModal} closeAndConfirm={toggleAndReject}/>
+                    }
                 </Modal.Body>
             </Modal>
         </div>
