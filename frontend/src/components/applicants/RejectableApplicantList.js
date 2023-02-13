@@ -1,10 +1,8 @@
 import {Link} from 'react-router-dom';
 import {useEffect, useState} from "react";
-import {getJsonPromise} from '../../utils/PageUtils';
-import {plainSpinner} from '../../utils/PageUtils';
+import {getJsonPromise, plainSpinner} from '../../utils/PageUtils';
 import RejectableApplicant from './RejectableApplicant';
 import {Button, Table} from 'flowbite-react';
-import {ExclamationTriangleIcon} from '@heroicons/react/24/solid';
 
 function RejectableApplicantList({job, close, closeAndConfirm}) {
     const [isLoading, setIsLoading] = useState(true);
@@ -97,7 +95,9 @@ function RejectableApplicantList({job, close, closeAndConfirm}) {
                     <Link to="/help#release">To learn more about the candidate release process, click here.</Link>
                 </div>
                 <div className="justify-center md:flex space-x-3">
-                    <Button color="failure" onClick={function() { rejectAll(applicants) }}>I understand, please continue.</Button>
+                    <Button color="failure" onClick={function () {
+                        rejectAll(applicants)
+                    }}>I understand, please continue.</Button>
                     <Button color="light" onClick={close}>Cancel</Button>
                 </div>
             </div>
@@ -107,7 +107,7 @@ function RejectableApplicantList({job, close, closeAndConfirm}) {
     function rejectAll(applicants) {
         const options = {
             method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(applicants)
         };
         fetch(`http://localhost:8080/applicants/reject-all`, options)
