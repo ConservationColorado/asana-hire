@@ -2,44 +2,21 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer components {
-    .btn-primary {
-        @apply bg-blue-500 text-white font-bold py-2 px-5
-    }
-}
-
-.backdrop {
-    position: fixed;
-    z-index: 1;
-    background-color: rgba(0, 0, 0, 0.75);
-    width: 100%;
-    height: 100vh;
+.fixed-table-head {
+    position: sticky;
     top: 0;
-    left: 0;
+    box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.1);
 }
 
-.modal {
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
-    border-radius: 6px;
-    background-color: white;
-    padding: 2rem;
-    text-align: center;
-    width: 30rem;
-    z-index: 10;
+.toast {
     position: fixed;
-    top: 20vh;
-    left: calc(50% - 15rem);
+    bottom: 0;
+    right: 0;
+    padding: 20px;
+    z-index: 9999;
 }
 
-.divider {
-    width: 1em;
-    height: auto;
-    display: inline-block;
-}
-
-.main-content {
-    display: 'flex';
-    alignItems: 'center';
-    justifyContent: 'center';
-
+.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
