@@ -7,3 +7,16 @@
     top: 0;
     box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.1);
 }
+
+.toast {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    padding: 20px;
+    z-index: 9999;
+}
+
+.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}

@@ -1,38 +1,46 @@
 import React, {useState} from 'react'
 import {Button, Modal} from 'flowbite-react'
 import RejectableApplicantList from '../applicants/RejectableApplicantList'
-import RejectionNotification from './RejectionNotification';
+import Notification from '../ui/Notification';
 
 function RejectionModal({job}) {
-    const [isShown, setIsShown] = useState();
+    const [isModalShown, setIsModalShown] = useState();
+    const [isToastShown, setIsToastShown] = useState();
+    const [hasRun, setHasRun] = useState();
+
     return (
         <div>
-            <div onClick={toggleModal}>
-                Reject applicants
-            </div>
+            {!hasRun
+                ? <div onClick={toggleModal}>Release applicants</div>
+                : <div className="disabled">Applicants released!</div>
+            }
             <Modal
-                show={isShown}
+                show={isModalShown}
                 onClose={toggleModal}
             >
                 <Modal.Header>
                     Release candidates from the {job.title} hiring process
                 </Modal.Header>
                 <Modal.Body>
-                    {isShown &&
+                    {isModalShown &&
                         <RejectableApplicantList job={job} close={toggleModal} closeAndConfirm={toggleAndReject}/>
                     }
                 </Modal.Body>
             </Modal>
+            <div className="toast">
+                {isToastShown && <Notification message={`✔️ Released ${job.title}`}/>}
+            </div>
         </div>
     );
 
     function toggleModal() {
-        setIsShown(!isShown);
+        setIsModalShown(!isModalShown);
     }
 
     function toggleAndReject() {
         toggleModal();
-        return <RejectionNotification job={job}/>
+        setIsToastShown(true)
+        setHasRun(true)
     }
 
 }
