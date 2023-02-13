@@ -16,4 +16,5 @@ function RejectableApplicant({applicant}) {
         </Table.Row>
     );
 }
+
 export default RejectableApplicant;
