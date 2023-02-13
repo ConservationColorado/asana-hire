@@ -48,8 +48,16 @@ function RejectableApplicantList({job, close, closeAndConfirm}) {
 
     function emptyApplicantList() {
         return (
-            <div>
-                No applicants found!
+            <div className="space-y-5">
+                <p>
+                    We didn't find any applicants to release from this hiring process!
+                </p>
+                <p>
+                    <Link to="/help#release">To learn more about the candidate release process, click here.</Link>
+                </p>
+                <div className="justify-center md:flex space-x-3">
+                    <Button color="light" onClick={close}>Close</Button>
+                </div>
             </div>
         );
     }
