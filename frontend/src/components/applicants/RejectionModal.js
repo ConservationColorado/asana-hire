@@ -1,5 +1,5 @@
 import React, {useState} from 'react'
-import {Button, Modal} from 'flowbite-react'
+import {Modal} from 'flowbite-react'
 import RejectableApplicantList from '../applicants/RejectableApplicantList'
 import Notification from '../ui/Notification';
 
