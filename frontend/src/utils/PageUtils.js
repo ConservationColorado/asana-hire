@@ -19,6 +19,14 @@ export function plainSpinner(message) {
     );
 }
 
+export function spinner(message, size) {
+    return (
+        <div className="text-center pt-1">
+            <div><Spinner size={size}/>{message}</div>
+        </div>
+    );
+}
+
 export function getJsonPromise(url) {
     const options = {
         method: "GET",

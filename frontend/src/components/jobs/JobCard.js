@@ -2,6 +2,7 @@ import {Card, Sidebar} from "flowbite-react";
 import {ArrowTopRightOnSquareIcon, BoltIcon, FolderOpenIcon} from "@heroicons/react/24/solid";
 import {driveSearchString, projectLinkString, websiteJobLink} from "../../utils/LinkUtils";
 import RejectionModal from "../applicants/RejectionModal";
+import SyncHandler from "../applicants/SyncHandler";
 
 function JobCard({job}) {
     return (
@@ -43,7 +44,7 @@ function JobCard({job}) {
                                 <Sidebar.Item
                                     href="#"
                                 >
-                                    Sync this job
+                                    <SyncHandler job={job}/>
                                 </Sidebar.Item>
                                 <Sidebar.Item
                                     href="#"
