@@ -13,7 +13,7 @@ function SyncHandler({job}) {
                 fetch(`http://localhost:8080/sync/${job.id}`, {method: "PUT"})
                     .then(response => response.json())
                     .then(data => {
-                        if (JSON.stringify(data) !== JSON.stringify(lastResponse)) {
+                        if (lastResponse !== null && JSON.stringify(data) !== JSON.stringify(lastResponse)) {
                             finishSyncing(data)
                         }
                     })
