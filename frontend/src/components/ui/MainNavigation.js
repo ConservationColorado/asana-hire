@@ -14,9 +14,6 @@ function MainNavigation() {
                     className="mr-1 h-10"
                     alt="asana-hire logo"
                 />
-                <span className="self-center whitespace-nowrap text-xl font-semibold dark:text-white">
-                    Hiring Admin Console
-                </span>
             </Navbar.Brand>
             <Navbar.Toggle/>
             <Navbar.Collapse>
