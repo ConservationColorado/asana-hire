@@ -1,6 +1,6 @@
 package org.conservationco.asanahire.controller
 
-import org.conservationco.asanahire.domain.RejectableApplicant
+import org.conservationco.asanahire.model.applicant.RejectableApplicant
 import org.conservationco.asanahire.service.ApplicantService
 import org.springframework.web.bind.annotation.*
 import java.time.LocalDateTime

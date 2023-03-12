@@ -1,7 +1,7 @@
-package org.conservationco.asanahire.domain.mail.template
+package org.conservationco.asanahire.model.mail.template
 
-import org.conservationco.asanahire.domain.mail.Address
-import org.conservationco.asanahire.domain.mail.Message
+import org.conservationco.asanahire.model.mail.Address
+import org.conservationco.asanahire.model.mail.Message
 
 open class TemplatedMessage (
     val template: Template,

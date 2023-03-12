@@ -1,4 +1,4 @@
-package org.conservationco.asanahire.domain.mail.template
+package org.conservationco.asanahire.model.mail.template
 
 enum class Template(val source: String) {
     REJECTION("applicant-rejection.html"),

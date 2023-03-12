@@ -5,10 +5,10 @@ import com.asana.models.Task
 import com.asana.models.Workspace
 import kotlinx.coroutines.*
 import org.conservationco.asana.asanaContext
-import org.conservationco.asanahire.domain.Job
-import org.conservationco.asanahire.domain.InterviewApplicant
-import org.conservationco.asanahire.domain.OriginalApplicant
-import org.conservationco.asanahire.domain.asana.ApplicantSyncPair
+import org.conservationco.asanahire.model.job.Job
+import org.conservationco.asanahire.model.applicant.InterviewApplicant
+import org.conservationco.asanahire.model.applicant.OriginalApplicant
+import org.conservationco.asanahire.model.asana.ApplicantSyncPair
 import org.conservationco.asanahire.repository.JobRepository
 import org.conservationco.asanahire.repository.getJob
 import org.conservationco.asanahire.requests.JobSyncRequest

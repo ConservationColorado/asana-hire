@@ -1,4 +1,4 @@
-package org.conservationco.asanahire.domain
+package org.conservationco.asanahire.model.applicant
 
 import com.asana.models.Attachment
 

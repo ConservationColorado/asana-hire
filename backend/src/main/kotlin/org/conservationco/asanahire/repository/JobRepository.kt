@@ -1,6 +1,6 @@
 package org.conservationco.asanahire.repository
 
-import org.conservationco.asanahire.domain.Job
+import org.conservationco.asanahire.model.job.Job
 import org.conservationco.asanahire.exception.NoSuchJobException
 import org.springframework.data.repository.CrudRepository
 

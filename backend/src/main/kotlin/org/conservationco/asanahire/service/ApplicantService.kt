@@ -5,8 +5,8 @@ import com.asana.models.Workspace
 import kotlinx.coroutines.*
 import org.conservationco.asana.asanaContext
 import org.conservationco.asana.util.AsanaTable
-import org.conservationco.asanahire.domain.*
-import org.conservationco.asanahire.domain.Job
+import org.conservationco.asanahire.model.job.Job
+import org.conservationco.asanahire.model.applicant.*
 import org.conservationco.asanahire.repository.JobRepository
 import org.conservationco.asanahire.repository.getJob
 import org.conservationco.asanahire.util.*

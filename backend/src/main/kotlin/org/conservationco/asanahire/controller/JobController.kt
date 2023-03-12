@@ -1,6 +1,6 @@
 package org.conservationco.asanahire.controller
 
-import org.conservationco.asanahire.domain.Job
+import org.conservationco.asanahire.model.job.Job
 import org.conservationco.asanahire.service.JobService
 import org.springframework.web.bind.annotation.*
 

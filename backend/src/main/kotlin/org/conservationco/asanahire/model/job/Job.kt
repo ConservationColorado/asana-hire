@@ -1,4 +1,4 @@
-package org.conservationco.asanahire.domain
+package org.conservationco.asanahire.model.job
 
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue

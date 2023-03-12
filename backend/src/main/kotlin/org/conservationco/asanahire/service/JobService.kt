@@ -4,8 +4,8 @@ import com.asana.models.Portfolio
 import com.asana.models.Project
 import kotlinx.coroutines.*
 import org.conservationco.asana.asanaContext
-import org.conservationco.asanahire.domain.Job
-import org.conservationco.asanahire.domain.asana.JobSource
+import org.conservationco.asanahire.model.job.Job
+import org.conservationco.asanahire.model.asana.JobSource
 import org.conservationco.asanahire.exception.EmptyPortfolioException
 import org.conservationco.asanahire.exception.MismatchedHiringProjectsException
 import org.conservationco.asanahire.repository.JobRepository

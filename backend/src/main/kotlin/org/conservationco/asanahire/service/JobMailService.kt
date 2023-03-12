@@ -6,9 +6,9 @@ import kotlinx.html.unsafe
 import net.axay.simplekotlinmail.delivery.send
 import net.axay.simplekotlinmail.email.emailBuilder
 import net.axay.simplekotlinmail.html.withHTML
-import org.conservationco.asanahire.domain.mail.Address
-import org.conservationco.asanahire.domain.mail.template.Template
-import org.conservationco.asanahire.domain.mail.template.TemplatedJobMessage
+import org.conservationco.asanahire.model.mail.Address
+import org.conservationco.asanahire.model.mail.template.Template
+import org.conservationco.asanahire.model.mail.template.TemplatedJobMessage
 import org.simplejavamail.api.email.Email
 import org.simplejavamail.api.mailer.Mailer
 import org.springframework.beans.factory.annotation.Autowired

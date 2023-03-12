@@ -3,9 +3,9 @@ package org.conservationco.asanahire.util
 import com.asana.models.Project
 import com.asana.models.Task
 import org.conservationco.asana.asanaContext
-import org.conservationco.asanahire.domain.Applicant
-import org.conservationco.asanahire.domain.InterviewApplicant
-import org.conservationco.asanahire.domain.OriginalApplicant
+import org.conservationco.asanahire.model.applicant.Applicant
+import org.conservationco.asanahire.model.applicant.InterviewApplicant
+import org.conservationco.asanahire.model.applicant.OriginalApplicant
 
 // Serialization functions
 
