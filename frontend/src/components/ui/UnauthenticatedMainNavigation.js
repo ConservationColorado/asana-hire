@@ -1,9 +1,5 @@
 import {Navbar} from 'flowbite-react/lib/cjs/components';
 import logo from '../../images/logo.png';
-import {Link} from 'react-router-dom';
-import GoogleLoginButton from "../oauth/GoogleLoginButton"
-
-import NavigationLink from "./NavigationLink";
 
 function MainNavigation() {
     return (

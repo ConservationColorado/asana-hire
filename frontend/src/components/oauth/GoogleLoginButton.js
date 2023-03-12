@@ -5,8 +5,7 @@ function GoogleLoginButton({onSuccess, onError, type, theme}) {
     return (
         <GoogleLogin
             onSuccess={credentialResponse => {
-                console.log(credentialResponse);
-                onSuccess();
+                onSuccess(credentialResponse);
             }}
             onError={() => {
                 onError();
