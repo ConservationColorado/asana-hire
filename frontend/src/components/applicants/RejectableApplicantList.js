@@ -14,7 +14,7 @@ function RejectableApplicantList({job, close, closeAndConfirm}) {
                 setIsLoading(false)
                 setRejectableApplicants(data)
             });
-    }, []);
+    }, [job.id]);
 
     if (isLoading) {
         return loadingBody();

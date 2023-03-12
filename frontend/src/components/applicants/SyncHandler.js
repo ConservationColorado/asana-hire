@@ -21,7 +21,7 @@ function SyncHandler({job}) {
             }, 1000);
         }
         return () => clearInterval(interval);
-    }, [lastResponse, isSyncing]);
+    }, [job.id, lastResponse, isSyncing]);
 
     function startSyncing() {
         setIsSyncing(true);
