@@ -11,4 +11,13 @@ spring:
         temp.use_jdbc_metadata_defaults: false
         globally_quoted_identifiers: true
         auto_quote_keyword: true
-        
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: "https://www.googleapis.com/oauth2/v3/certs"
+      client:
+        registration:
+          google:
+            client-id: ${REACT_APP_GOOGLE_CLIENT_ID}
+            client-secret: ${google_oauth2_client_secret}
