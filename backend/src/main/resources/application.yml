@@ -1,3 +1,14 @@
 logging:
   level:
     org.springframework.beans: INFO
+spring:
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+        hbm2ddl:
+          auto: update
+        temp.use_jdbc_metadata_defaults: false
+        globally_quoted_identifiers: true
+        auto_quote_keyword: true
+        
