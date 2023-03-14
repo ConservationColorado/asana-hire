@@ -1,13 +1,19 @@
 import {Button} from "flowbite-react";
 import {googleLogout} from '@react-oauth/google';
+import {useContext} from "react";
+import {AuthContext} from "../../components/oauth/AuthProvider";
 
 function GoogleLogoutButton() {
-    function handleLogout() {
+
+    const {logout} = useContext(AuthContext);
+
+    const handleClick = () => {
         googleLogout();
-    }
+        logout();
+    };
 
     return (
-        <Button className="g_id_signout" onClick={handleLogout}>
+        <Button color="gray" pill={true} className="g_id_signout" onClick={handleClick} >
             Sign out
         </Button>
     );

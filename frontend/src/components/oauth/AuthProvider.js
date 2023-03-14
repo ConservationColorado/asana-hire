@@ -11,7 +11,7 @@ function AuthProvider({children}) {
         setIsAuthenticated(true);
         setCredential(credentialResponse);
         // POST credentialResponse to http://localhost:8080/login
-        // receive back a refresh token and store it in cookies
+        // receive back a refresh token and store it in cookies (with HttpOnly and Secure flags)
     }
 
     function logout() {

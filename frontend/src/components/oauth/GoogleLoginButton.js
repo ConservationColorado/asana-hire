@@ -1,23 +1,27 @@
 import React from "react";
-import {GoogleLogin} from '@react-oauth/google';
+import {Button} from "flowbite-react";
+import {useGoogleLogin} from '@react-oauth/google';
 
-function GoogleLoginButton({onSuccess, onError, type, theme}) {
+function GoogleLoginButton({onSuccess, onError}) {
+
+    const handleSuccess = async (tokenResponse) => {
+        onSuccess(tokenResponse);
+    };
+
+    const handleFailure = (error) => {
+        onError(error);
+    };
+
+    const handleClick = useGoogleLogin({
+        onSuccess: handleSuccess,
+        onFailure: handleFailure,
+        flow: 'implicit'
+    });
+
     return (
-        <GoogleLogin
-            onSuccess={credentialResponse => {
-                onSuccess(credentialResponse);
-            }}
-            onError={() => {
-                onError();
-            }}
-            useOneTap
-            type={type}
-            theme={theme}
-            shape="pill"
-            size="large"
-            width="300"
-            text="continue_with"
-        />
+        <Button color="gray" pill={true} onClick={handleClick}>
+            🔐 Continue with Google
+        </Button>
     );
 }
 
