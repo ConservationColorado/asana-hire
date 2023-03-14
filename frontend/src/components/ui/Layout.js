@@ -7,11 +7,11 @@ import { AuthContext } from "../oauth/AuthProvider";
 function Layout(props) {
     const {isAuthenticated} = useContext(AuthContext);
     return (
-        <div>
+        <>
             {isAuthenticated ? <MainNavigation/> : <UnauthenticatedMainNavigation/>}
             <main>{props.children}</main>
             <BottomFooter/>
-        </div>
+        </>
     );
 }
 
