@@ -22,3 +22,4 @@ spring:
           google:
             client-id: ${REACT_APP_GOOGLE_CLIENT_ID}
             client-secret: ${google_oauth2_client_secret}
+            scope: openid, profile, email
