@@ -15,7 +15,8 @@ function GoogleLoginButton({onSuccess, onError}) {
     const handleClick = useGoogleLogin({
         onSuccess: handleSuccess,
         onFailure: handleFailure,
-        flow: 'implicit'
+        flow: "auth-code",
+        scope: "https://www.googleapis.com/auth/gmail.modify"
     });
 
     return (
