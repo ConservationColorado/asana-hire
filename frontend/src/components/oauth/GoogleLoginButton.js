@@ -16,7 +16,10 @@ function GoogleLoginButton({onSuccess, onError}) {
         onSuccess: handleSuccess,
         onFailure: handleFailure,
         flow: "auth-code",
-        scope: "https://www.googleapis.com/auth/gmail.modify"
+        scope: "https://www.googleapis.com/auth/gmail.modify",
+        redirect_uri: "http://localhost:8080/auth/google",
+        ux_mode: "popup",
+        hosted_domain: "conservationco.org"
     });
 
     return (
