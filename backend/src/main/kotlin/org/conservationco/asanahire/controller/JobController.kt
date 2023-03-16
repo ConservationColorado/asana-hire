@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/jobs")
-@CrossOrigin
+@CrossOrigin(origins = ["http://localhost:3000"])
 class JobController(
     private val jobService: JobService,
 ) {

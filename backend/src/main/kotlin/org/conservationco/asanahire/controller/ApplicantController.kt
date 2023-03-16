@@ -7,7 +7,7 @@ import java.time.LocalDateTime
 
 @RestController
 @RequestMapping("/applicants")
-@CrossOrigin
+@CrossOrigin(origins = ["http://localhost:3000"])
 class ApplicantController(
     private val applicantService: ApplicantService,
 ) {
