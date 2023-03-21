@@ -13,4 +13,6 @@ open class User(
     open var name: String = "",
     open var email: String = "",
     open var picture: String = "",
+    open var accessToken: String = "",
+    open var refreshToken: String = "",
 )
