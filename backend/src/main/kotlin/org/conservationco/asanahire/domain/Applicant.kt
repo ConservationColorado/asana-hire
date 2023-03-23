@@ -12,4 +12,5 @@ interface Applicant {
     var email: String
     var phoneNumber: String
     var references: String
+    var bilingual: String
 }
