@@ -13,13 +13,10 @@ spring:
         auto_quote_keyword: true
   security:
     oauth2:
-      resourceserver:
-        jwt:
-          issuer-uri: https://accounts.google.com
-          jwk-set-uri: https://www.googleapis.com/oauth2/v3/certs
       client:
         registration:
           google:
-            client-id: ${REACT_APP_GOOGLE_CLIENT_ID}
-            client-secret: ${google_oauth2_client_secret}
-            scope: openid, profile, email
+            clientId: ${google_client_id}
+            clientSecret: ${google_client_secret}
+            scope:
+              - "https://www.googleapis.com/auth/gmail.modify"
