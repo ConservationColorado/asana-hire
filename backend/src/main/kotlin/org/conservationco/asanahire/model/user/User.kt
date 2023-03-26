@@ -4,6 +4,7 @@ import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
+import org.conservationco.asanahire.security.AuthProvider
 
 @Entity
 open class User(
@@ -13,6 +14,5 @@ open class User(
     open var name: String = "",
     open var email: String = "",
     open var picture: String = "",
-    open var accessToken: String = "",
-    open var refreshToken: String = "",
+    open var provider: AuthProvider = AuthProvider.LOCAL,
 )

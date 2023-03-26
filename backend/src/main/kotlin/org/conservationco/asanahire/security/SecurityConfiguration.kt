@@ -1,11 +1,11 @@
-package org.conservationco.asanahire.config
+package org.conservationco.asanahire.security
 
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpStatus
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
-import org.springframework.security.config.annotation.web.configurers.oauth2.client.OAuth2LoginConfigurer
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.HttpStatusEntryPoint
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository
@@ -14,9 +14,12 @@ import org.springframework.security.web.csrf.CookieCsrfTokenRepository
 @EnableWebSecurity
 class SecurityConfiguration {
 
+    @Autowired
+    private lateinit var successHandler: OAuth2LoginSuccessHandler
+
     @Bean
-    fun filterChain(http: HttpSecurity): OAuth2LoginConfigurer<HttpSecurity> {
-        return http
+    fun filterChain(http: HttpSecurity): SecurityFilterChain {
+        http
             .authorizeHttpRequests { authConfig ->
                 authConfig
                     .requestMatchers("/", "/error")
@@ -37,7 +40,10 @@ class SecurityConfiguration {
                 errorConfig
                     .authenticationEntryPoint(HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
             }
-            .oauth2Login()
+            .oauth2Login { oauth2Config ->
+                oauth2Config.successHandler(successHandler)
+            }
+        return http.build()
     }
 
 }

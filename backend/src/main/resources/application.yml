@@ -22,4 +22,5 @@ spring:
             scope:
               - openid
               - profile
+              - email
               - "https://www.googleapis.com/auth/gmail.modify"
