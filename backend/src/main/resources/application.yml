@@ -1,6 +1,7 @@
 logging:
   level:
-    org.springframework.beans: INFO
+    org.springframework.beans: info
+    org.springframework.data.jpa: debug
 spring:
   jpa:
     properties:
@@ -16,6 +17,7 @@ spring:
       client:
         registration:
           google:
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
             client-id: ${google_client_id}
             client-secret: ${google_client_secret}
             authorization-grant-type: authorization_code
