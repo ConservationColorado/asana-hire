@@ -1,0 +1,14 @@
+CREATE TABLE IF NOT EXISTS `User` (
+    id VARCHAR(36) PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    picture VARCHAR(255) NOT NULL,
+    provider VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS Job (
+    id BIGINT PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    applicationProjectId VARCHAR(255) NOT NULL,
+    interviewProjectId VARCHAR(255) NOT NULL
+);
