@@ -3,45 +3,38 @@ package org.conservationco.asanahire.security
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.http.HttpStatus
-import org.springframework.security.config.annotation.web.builders.HttpSecurity
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
-import org.springframework.security.web.SecurityFilterChain
-import org.springframework.security.web.authentication.HttpStatusEntryPoint
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository
+import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity
+import org.springframework.security.config.web.server.ServerHttpSecurity
+import org.springframework.security.web.server.SecurityWebFilterChain
+import org.springframework.security.web.server.authentication.ServerAuthenticationSuccessHandler
+import org.springframework.security.web.server.csrf.CookieServerCsrfTokenRepository
 
 @Configuration
-@EnableWebSecurity
+@EnableWebFluxSecurity
 class SecurityConfiguration {
 
     @Autowired
-    private lateinit var successHandler: OAuth2LoginSuccessHandler
+    private lateinit var successHandler: ServerAuthenticationSuccessHandler
 
     @Bean
-    fun filterChain(http: HttpSecurity): SecurityFilterChain {
+    fun securityWebFilterChain(http: ServerHttpSecurity): SecurityWebFilterChain {
         http
-            .authorizeHttpRequests { authConfig ->
-                authConfig
-                    .requestMatchers("/", "/error")
-                    .permitAll()
-                    .anyRequest()
+            .authorizeExchange { authSpec ->
+                authSpec
+                    .anyExchange()
                     .authenticated()
             }
-            .logout { logoutConfig ->
-                logoutConfig
-                    .logoutSuccessUrl("/")
-                    .permitAll()
+            .logout { logoutSpec ->
+                logoutSpec
+                    .logoutUrl("/")
             }
-            .csrf { csrfConfig ->
-                csrfConfig
-                    .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+            .csrf { csrfSpec ->
+                csrfSpec
+                    .csrfTokenRepository(CookieServerCsrfTokenRepository.withHttpOnlyFalse())
             }
-            .exceptionHandling { errorConfig ->
-                errorConfig
-                    .authenticationEntryPoint(HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
-            }
-            .oauth2Login { oauth2Config ->
-                oauth2Config.successHandler(successHandler)
+            .oauth2Login { oAuth2LoginSpec ->
+                oAuth2LoginSpec
+                    .authenticationSuccessHandler(successHandler)
             }
         return http.build()
     }
