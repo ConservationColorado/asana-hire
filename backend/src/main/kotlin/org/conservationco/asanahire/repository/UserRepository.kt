@@ -1,10 +1,9 @@
 package org.conservationco.asanahire.repository
 
 import org.conservationco.asanahire.model.user.User
-import org.springframework.data.jpa.repository.JpaRepository
-import org.springframework.stereotype.Repository
+import org.springframework.data.repository.reactive.ReactiveCrudRepository
+import reactor.core.publisher.Mono
 
-@Repository
-interface UserRepository : JpaRepository<User, String> {
-    fun findByEmail(email: String): User?
+interface UserRepository : ReactiveCrudRepository<User, String> {
+    fun findByEmail(email: String): Mono<User>
 }

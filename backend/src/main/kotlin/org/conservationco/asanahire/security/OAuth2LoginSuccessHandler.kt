@@ -18,9 +18,8 @@ class OAuth2LoginSuccessHandler(
         webFilterExchange: WebFilterExchange,
         authentication: Authentication
     ): Mono<Void> {
-        userService.onAuthenticationSuccess(authentication)
         redirectUser(webFilterExchange)
-        return Mono.empty()
+        return userService.onAuthenticationSuccess(authentication)
     }
 
     private fun redirectUser(webFilterExchange: WebFilterExchange) {
