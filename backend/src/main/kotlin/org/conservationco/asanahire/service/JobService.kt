@@ -8,6 +8,7 @@ import org.conservationco.asanahire.exception.MismatchedHiringProjectsException
 import org.conservationco.asanahire.model.asana.JobSource
 import org.conservationco.asanahire.model.job.Job
 import org.conservationco.asanahire.repository.JobRepository
+import org.conservationco.exception.JobNotFoundException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
@@ -23,121 +24,105 @@ class JobService(
 
     private val logger = Logger.getLogger(JobService::class.qualifiedName)
 
-    val keywordFilter: (Project, String) -> Boolean = { project, keyword ->
-        project.name.contains(keyword, ignoreCase = true)
-    }
+    fun getLocalOrFetchJob(jobId: Long): Mono<Job> =
+        jobRepository
+            .findById(jobId)
+            .switchIfEmpty(
+                Mono.error(JobNotFoundException("Job with ID $jobId not found!"))
+            )
 
-    fun getJob(jobId: Long): Mono<Job> {
-        return verifyProjects()
-            .flatMap { jobRepository.findById(jobId) }
-    }
-
-    fun getJobs(): Flux<Job> {
-        return verifyProjects()
+    fun getLocalOrFetchJobs() =
+        jobRepository
+            .count()
+            .doOnNext {
+                if (it == 0L) {
+                    logger.info("No jobs in repository... fetching them.")
+                    fetchAndBuildJobs()
+                }
+            }
             .flatMapMany { jobRepository.findAll() }
-    }
+            .collectList()
 
-    private fun forceReloadProjects(): Mono<Void> {
-        val jobs: Flux<Job> = collectJobs().flatMapMany { Flux.fromIterable(it) }
-        return jobRepository
-            .deleteAll()
-            .doOnSuccess { logger.info("Deleted jobs from repository. Saving new jobs now.") }
-            .flatMapMany { jobRepository.saveAll(jobs) }
+    private fun fetchAndBuildJobs() =
+        collectJobs()
+            .flatMapMany { Flux.fromIterable(it) }
+            .flatMap { jobRepository.save(it) }
             .doOnComplete { logger.info("Saved new jobs to repository.") }
             .doOnError { logger.severe("Error occurred while saving jobs to repository.") }
-            .then()
-    }
+            .subscribe()
 
-    private fun collectJobs(): Mono<Collection<Job>> {
-        val applicationProjectsMono = Mono.fromCallable {
-            extractProjects(jobSource.applicationPortfolio, "application")
-        }
-        val interviewProjectsMono = Mono.fromCallable {
-            extractProjects(jobSource.interviewPortfolio, "interview")
-        }
-        val applicationProjects = mapProjectNamesToIds(applicationProjectsMono)
-        val interviewProjects = mapProjectNamesToIds(interviewProjectsMono)
+    private fun collectJobs() =
+        Mono
+            .zip(
+                extractProjects(jobSource.applicationPortfolio, "application"),
+                extractProjects(jobSource.interviewPortfolio, "interview")
+            )
+            .flatMap { tuple -> errorFilter(tuple) }
+            .flatMap { tuple -> collectTupleToCollection(tuple) }
 
-        return validateProjects(applicationProjects, interviewProjects)
-            .flatMap { unifyProjectsToJobList(applicationProjects, interviewProjects) }
-    }
-
-    private fun unifyProjectsToJobList(
-        applicationProjectsMono: Mono<Map<String, String>>,
-        interviewProjectsMono: Mono<Map<String, String>>
-    ): Mono<Collection<Job>> {
-        return Mono
-            .zip(applicationProjectsMono, interviewProjectsMono)
-            .map { mapJobProjectsToSingleJobCollection(it) }
-    }
-
-    private fun mapJobProjectsToSingleJobCollection(
+    private fun collectTupleToCollection(
         tuple: Tuple2<Map<String, String>, Map<String, String>>
-    ): Collection<Job> {
+    ): Mono<Collection<Job>> {
         val applicationProjects = tuple.t1
         val interviewProjects = tuple.t2
-        return (applicationProjects.keys.asSequence() + interviewProjects.keys)
-            .associateWith {
-                val job = Job()
-                job.title = it
-                job.applicationProjectId = applicationProjects[it].orEmpty()
-                job.interviewProjectId = interviewProjects[it].orEmpty()
-                job
+
+        val jobs = (applicationProjects.keys.asSequence() + interviewProjects.keys)
+            .associateWith { it ->
+                Job().apply {
+                    title = it
+                    applicationProjectId = applicationProjects[it].orEmpty()
+                    interviewProjectId = interviewProjects[it].orEmpty()
+                }
             }.values
+
+        return Mono.just(jobs)
     }
 
-    private fun mapProjectNamesToIds(projectsMono: Mono<List<Project>>) =
-        projectsMono
-            .map { list -> list.associateBy({ extractJobTitle(it.name) }, { it.gid }) }
-
-    private fun validateProjects(
-        applicationProjectsMono: Mono<Map<String, String>>,
-        interviewProjectsMono: Mono<Map<String, String>>
-    ): Mono<Void> {
-        return Mono
-            .zip(applicationProjectsMono, interviewProjectsMono)
-            .flatMap { checkAndMapAnyErrors(it) }
-    }
-
-    private fun checkAndMapAnyErrors(it: Tuple2<Map<String, String>, Map<String, String>>): Mono<Void> {
-        val applicationProjectCount = it.t1.size
-        val interviewProjectCount = it.t2.size
+    private fun errorFilter(
+        tuple: Tuple2<Map<String, String>, Map<String, String>>
+    ): Mono<Tuple2<Map<String, String>, Map<String, String>>> {
+        val applicationProjectCount = tuple.t1.size
+        val interviewProjectCount = tuple.t2.size
         val applicationProjectsExist = applicationProjectCount != 0
         val interviewProjectsExist = interviewProjectCount != 0
 
-        return if (!interviewProjectsExist) {
-            Mono.error(EmptyPortfolioException("No projects in the application portfolio!"))
-        } else if (!applicationProjectsExist) {
-            Mono.error(EmptyPortfolioException("No projects in the interview portfolio!"))
-        } else if (interviewProjectCount != applicationProjectCount) {
-            Mono.error(
-                MismatchedHiringProjectsException(
-                    "Job project counts must match across application and interview portfolios:" +
-                            "$applicationProjectCount application projects != $interviewProjectCount interview projects !"
+        return when {
+            !interviewProjectsExist -> Mono.error(EmptyPortfolioException("No projects in the application portfolio!"))
+            !applicationProjectsExist -> Mono.error(EmptyPortfolioException("No projects in the interview portfolio!"))
+            interviewProjectCount != applicationProjectCount ->
+                Mono.error(
+                    MismatchedHiringProjectsException(
+                        "Job project counts must match across application and interview portfolios:" +
+                                "$applicationProjectCount application projects != $interviewProjectCount interview projects!"
+                    )
                 )
-            )
-        } else {
-            Mono.empty()
+
+            else -> Mono.just(tuple)
         }
     }
 
     private fun extractProjects(
         portfolio: Portfolio,
         keyword: String
-    ): List<Project> = asanaContext {
-        portfolio
-            .getItems()
-            .filter { keywordFilter(it, keyword) }
+    ): Mono<Map<String, String>> = asanaContext {
+        Mono.fromCallable {
+            portfolio
+                .getItems()
+                .filter { keywordFilter(it, keyword) }
+        }.mapProjectNamesToIds()
     }
+
+    private val keywordFilter: (Project, String) -> Boolean = { project, keyword ->
+        project.name.contains(keyword, ignoreCase = true)
+    }
+
+    private fun Mono<List<Project>>.mapProjectNamesToIds() =
+        map { list -> list.associateBy({ extractJobTitle(it.name) }, { it.gid }) }
 
     private fun extractJobTitle(projectName: String): String {
         val separator = ": "
         val titleStart = projectName.indexOf(separator) + separator.length
         return projectName.substring(titleStart).trim()
     }
-
-    private fun verifyProjects() = jobRepository
-        .count()
-        .map { if (it == 0L) forceReloadProjects() }
 
 }
