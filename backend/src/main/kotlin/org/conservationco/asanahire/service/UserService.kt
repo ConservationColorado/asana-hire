@@ -3,6 +3,7 @@ package org.conservationco.asanahire.service
 import org.conservationco.asanahire.model.user.User
 import org.conservationco.asanahire.repository.UserRepository
 import org.conservationco.asanahire.security.valueOfIgnoreCase
+import org.conservationco.asanahire.util.handleSaveError
 import org.springframework.security.core.Authentication
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken
 import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser
@@ -26,12 +27,7 @@ class UserService(
             .switchIfEmpty(saveNewUser(newUser))
             .flatMap { existingUser -> handleUser(newUser, existingUser) }
             .then()
-            .onErrorResume { handleSaveError(it) }
-    }
-
-    private fun handleSaveError(it: Throwable): Mono<Void> {
-        logger.severe("An error occurred while handling user: ${it.message})")
-        return Mono.empty()
+            .onErrorResume { handleSaveError(logger, it) }
     }
 
     private fun saveNewUser(user: User) =
