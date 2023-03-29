@@ -8,6 +8,7 @@ import org.conservationco.asanahire.exception.MismatchedHiringProjectsException
 import org.conservationco.asanahire.model.asana.JobSource
 import org.conservationco.asanahire.model.job.Job
 import org.conservationco.asanahire.repository.JobRepository
+import org.conservationco.asanahire.util.handleSaveError
 import org.conservationco.exception.JobNotFoundException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -27,9 +28,7 @@ class JobService(
     fun getLocalOrFetchJob(jobId: Long): Mono<Job> =
         jobRepository
             .findById(jobId)
-            .switchIfEmpty(
-                Mono.error(JobNotFoundException(jobId))
-            )
+            .switchIfEmpty(Mono.error(JobNotFoundException(jobId)))
 
     fun getLocalOrFetchJobs() =
         jobRepository
@@ -42,6 +41,7 @@ class JobService(
             .flatMapMany { Flux.fromIterable(it) }
             .flatMap { jobRepository.save(it) }
             .doOnComplete { logger.info("Saved new jobs to repository") }
+            .onErrorResume { handleSaveError(logger, it) }
 
     private fun collectJobs() =
         Mono
