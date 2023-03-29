@@ -57,8 +57,8 @@ class JobService(
                 jobSource.applicationPortfolio.extractProjects("application"),
                 jobSource.interviewPortfolio.extractProjects("interview")
             )
-            .flatMap { tuple -> errorFilter(tuple) }
-            .flatMap { tuple -> combinePortfolios(tuple) }
+            .flatMap { errorFilter(it) }
+            .flatMap { combinePortfolios(it) }
 
 }
 
@@ -71,7 +71,7 @@ private fun combinePortfolios(
     val interviewProjects = tuple.t2
 
     val jobs = (applicationProjects.keys.asSequence() + interviewProjects.keys)
-        .associateWith { it ->
+        .associateWith {
             Job().apply {
                 title = it
                 applicationProjectId = applicationProjects[it].orEmpty()
