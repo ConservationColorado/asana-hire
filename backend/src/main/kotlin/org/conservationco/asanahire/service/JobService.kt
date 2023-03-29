@@ -33,23 +33,15 @@ class JobService(
 
     fun getLocalOrFetchJobs() =
         jobRepository
-            .count()
-            .doOnNext {
-                if (it == 0L) {
-                    logger.info("No jobs in repository... fetching them.")
-                    fetchAndBuildJobs()
-                }
-            }
-            .flatMapMany { jobRepository.findAll() }
+            .findAll()
+            .switchIfEmpty(fetchAndBuildJobs())
             .collectList()
 
     private fun fetchAndBuildJobs() =
         collectJobs()
             .flatMapMany { Flux.fromIterable(it) }
             .flatMap { jobRepository.save(it) }
-            .doOnComplete { logger.info("Saved new jobs to repository.") }
-            .doOnError { logger.severe("Error occurred while saving jobs to repository.") }
-            .subscribe()
+            .doOnComplete { logger.info("Saved new jobs to repository") }
 
     private fun collectJobs() =
         Mono
