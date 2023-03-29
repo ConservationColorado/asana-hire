@@ -23,16 +23,21 @@ class UserService(
         val newUser = (authentication.principal as DefaultOidcUser).toUser(provider)
         return userRepository
             .findByEmail(newUser.email)
-            .switchIfEmpty(saveUser(newUser, "Saved new user from OAuth2"))
+            .switchIfEmpty(saveNewUser(newUser))
             .flatMap { existingUser -> handleUser(newUser, existingUser) }
             .then()
-            .onErrorResume {
-                logger.severe("An error occurred while handling user: ${it.message})")
-                Mono.empty()
-            }
+            .onErrorResume { handleSaveError(it) }
     }
 
-    private fun saveUser(user: User, message: String): Mono<User> =
+    private fun handleSaveError(it: Throwable): Mono<Void> {
+        logger.severe("An error occurred while handling user: ${it.message})")
+        return Mono.empty()
+    }
+
+    private fun saveNewUser(user: User) =
+        saveUser(user, "Saved new user from ${user.provider} OAuth2")
+
+    private fun saveUser(user: User, message: String) =
         userRepository
             .save(user)
             .doOnSuccess { logger.info(message) }
