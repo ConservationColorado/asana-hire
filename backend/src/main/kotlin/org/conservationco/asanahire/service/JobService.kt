@@ -28,7 +28,7 @@ class JobService(
         jobRepository
             .findById(jobId)
             .switchIfEmpty(
-                Mono.error(JobNotFoundException("Job with ID $jobId not found!"))
+                Mono.error(JobNotFoundException(jobId))
             )
 
     fun getLocalOrFetchJobs() =
@@ -54,75 +54,75 @@ class JobService(
     private fun collectJobs() =
         Mono
             .zip(
-                extractProjects(jobSource.applicationPortfolio, "application"),
-                extractProjects(jobSource.interviewPortfolio, "interview")
+                jobSource.applicationPortfolio.extractProjects("application"),
+                jobSource.interviewPortfolio.extractProjects("interview")
             )
             .flatMap { tuple -> errorFilter(tuple) }
-            .flatMap { tuple -> collectTupleToCollection(tuple) }
+            .flatMap { tuple -> combinePortfolios(tuple) }
 
-    private fun collectTupleToCollection(
-        tuple: Tuple2<Map<String, String>, Map<String, String>>
-    ): Mono<Collection<Job>> {
-        val applicationProjects = tuple.t1
-        val interviewProjects = tuple.t2
+}
 
-        val jobs = (applicationProjects.keys.asSequence() + interviewProjects.keys)
-            .associateWith { it ->
-                Job().apply {
-                    title = it
-                    applicationProjectId = applicationProjects[it].orEmpty()
-                    interviewProjectId = interviewProjects[it].orEmpty()
-                }
-            }.values
+// Helper functions
 
-        return Mono.just(jobs)
-    }
+private fun combinePortfolios(
+    tuple: Tuple2<Map<String, String>, Map<String, String>>
+): Mono<Collection<Job>> {
+    val applicationProjects = tuple.t1
+    val interviewProjects = tuple.t2
 
-    private fun errorFilter(
-        tuple: Tuple2<Map<String, String>, Map<String, String>>
-    ): Mono<Tuple2<Map<String, String>, Map<String, String>>> {
-        val applicationProjectCount = tuple.t1.size
-        val interviewProjectCount = tuple.t2.size
-        val applicationProjectsExist = applicationProjectCount != 0
-        val interviewProjectsExist = interviewProjectCount != 0
+    val jobs = (applicationProjects.keys.asSequence() + interviewProjects.keys)
+        .associateWith { it ->
+            Job().apply {
+                title = it
+                applicationProjectId = applicationProjects[it].orEmpty()
+                interviewProjectId = interviewProjects[it].orEmpty()
+            }
+        }.values
 
-        return when {
-            !interviewProjectsExist -> Mono.error(EmptyPortfolioException("No projects in the application portfolio!"))
-            !applicationProjectsExist -> Mono.error(EmptyPortfolioException("No projects in the interview portfolio!"))
-            interviewProjectCount != applicationProjectCount ->
-                Mono.error(
-                    MismatchedHiringProjectsException(
-                        "Job project counts must match across application and interview portfolios:" +
-                                "$applicationProjectCount application projects != $interviewProjectCount interview projects!"
-                    )
+    return Mono.just(jobs)
+}
+
+private fun Portfolio.extractProjects(
+    keyword: String
+): Mono<Map<String, String>> = asanaContext {
+    Mono.fromCallable {
+        getItems()
+            .filter { keywordFilter(it, keyword) }
+    }.mapProjectNamesToIds()
+}
+
+private val keywordFilter: (Project, String) -> Boolean = { project, keyword ->
+    project.name.contains(keyword, ignoreCase = true)
+}
+
+private fun Mono<List<Project>>.mapProjectNamesToIds() =
+    map { list -> list.associateBy({ extractJobTitle(it.name) }, { it.gid }) }
+
+private fun extractJobTitle(projectName: String): String {
+    val separator = ": "
+    val titleStart = projectName.indexOf(separator) + separator.length
+    return projectName.substring(titleStart).trim()
+}
+
+private fun errorFilter(
+    tuple: Tuple2<Map<String, String>, Map<String, String>>
+): Mono<Tuple2<Map<String, String>, Map<String, String>>> {
+    val applicationProjectCount = tuple.t1.size
+    val interviewProjectCount = tuple.t2.size
+    val applicationProjectsExist = applicationProjectCount != 0
+    val interviewProjectsExist = interviewProjectCount != 0
+
+    return when {
+        !interviewProjectsExist -> Mono.error(EmptyPortfolioException("No projects in the application portfolio!"))
+        !applicationProjectsExist -> Mono.error(EmptyPortfolioException("No projects in the interview portfolio!"))
+        interviewProjectCount != applicationProjectCount ->
+            Mono.error(
+                MismatchedHiringProjectsException(
+                    "Job project counts must match across application and interview portfolios:" +
+                            "$applicationProjectCount application projects != $interviewProjectCount interview projects!"
                 )
+            )
 
-            else -> Mono.just(tuple)
-        }
+        else -> Mono.just(tuple)
     }
-
-    private fun extractProjects(
-        portfolio: Portfolio,
-        keyword: String
-    ): Mono<Map<String, String>> = asanaContext {
-        Mono.fromCallable {
-            portfolio
-                .getItems()
-                .filter { keywordFilter(it, keyword) }
-        }.mapProjectNamesToIds()
-    }
-
-    private val keywordFilter: (Project, String) -> Boolean = { project, keyword ->
-        project.name.contains(keyword, ignoreCase = true)
-    }
-
-    private fun Mono<List<Project>>.mapProjectNamesToIds() =
-        map { list -> list.associateBy({ extractJobTitle(it.name) }, { it.gid }) }
-
-    private fun extractJobTitle(projectName: String): String {
-        val separator = ": "
-        val titleStart = projectName.indexOf(separator) + separator.length
-        return projectName.substring(titleStart).trim()
-    }
-
 }

@@ -1,3 +1,3 @@
 package org.conservationco.exception
 
-class JobNotFoundException(message: String) : RuntimeException(message)
+class JobNotFoundException(jobId: Long) : RuntimeException("Job with ID $jobId not found!")
