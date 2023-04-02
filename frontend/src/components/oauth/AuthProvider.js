@@ -1,31 +1,71 @@
-import React, {createContext, useState} from "react";
-import {GoogleOAuthProvider} from '@react-oauth/google';
+import React, {createContext, useEffect, useState} from "react";
+import Cookies from 'js-cookie';
 
 export const AuthContext = createContext();
 
 function AuthProvider({children}) {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [credential, setCredential] = useState("");
+    const [credential, setCredential] = useState(null);
 
-    function login(credentialResponse) {
-        setIsAuthenticated(true);
-        setCredential(credentialResponse);
-        // POST credentialResponse to http://localhost:8080/login
-        // receive back a refresh token and store it in cookies (with HttpOnly and Secure flags)
+    useEffect(() => {
+        fetch('http://localhost:8080/user/me', {
+            method: 'GET',
+            credentials: 'include'
+        })
+            .then((response) => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error("User is not authenticated");
+                }
+            })
+            .then((data) => {
+                setIsAuthenticated(true);
+                setCredential(data);
+            })
+            .catch((error) => {
+                destroySession();
+            });
+    }, []);
+
+    function oauthLogin(provider) {
+        let uri = "http://localhost:8080/oauth2/authorization/" + provider;
+        window.location.href = uri;
+    }
+
+    function formLogin() {
+        const uri = "http://localhost:8080/login";
     }
 
     function logout() {
+        fetch('http://localhost:8080/oauth2/logout', {
+            method: 'POST',
+            credentials: 'include',
+            headers: {
+                "X-XSRF-TOKEN": getXSRFToken(),
+            },
+        })
+        destroySession();
+    }
+
+    function loginSuccess(data) {
+        setIsAuthenticated(true);
+        setCredential(data);
+    }
+
+    function destroySession() {
         setIsAuthenticated(false);
-        setCredential("");
-        // POST refresh token to http://localhost:8080/logout
-        // destroy the refresh token cookie
+        setCredential(null);
+    }
+
+    function getXSRFToken() {
+        let csrfToken = Cookies.get('XSRF-TOKEN');
+        return csrfToken;
     }
 
     return (
-        <AuthContext.Provider value={{isAuthenticated, credential, login, logout}}>
-            <GoogleOAuthProvider clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}>
-                {children}
-            </GoogleOAuthProvider>
+        <AuthContext.Provider value={{isAuthenticated, getXSRFToken, credential, formLogin, oauthLogin, logout}}>
+            {children}
         </AuthContext.Provider>
     );
 }
