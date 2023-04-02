@@ -1,16 +1,8 @@
-logging:
-  level:
-    org.springframework.data.r2dbc: debug
-    org.springframework.security: debug
 spring:
-  h2:
-    console:
-      enabled: true
-      path: /h2-console
   r2dbc:
-    url: r2dbc:h2:mem:///testdb?options=DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
-    username: sa
-    password:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
     initialization-mode: always
   security:
     oauth2:
