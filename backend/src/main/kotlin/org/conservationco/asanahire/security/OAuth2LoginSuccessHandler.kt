@@ -1,6 +1,7 @@
 package org.conservationco.asanahire.security
 
 import org.conservationco.asanahire.service.UserService
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
 import org.springframework.http.server.reactive.ServerHttpResponse
 import org.springframework.security.core.Authentication
@@ -15,6 +16,9 @@ class OAuth2LoginSuccessHandler(
     private val userService: UserService,
 ) : ServerAuthenticationSuccessHandler {
 
+    @Value("\${FRONTEND_URL}")
+    private lateinit var redirectUrl: String
+
     override fun onAuthenticationSuccess(
         webFilterExchange: WebFilterExchange,
         authentication: Authentication
@@ -25,7 +29,7 @@ class OAuth2LoginSuccessHandler(
 
     private fun redirectUser(response: ServerHttpResponse) {
         response.statusCode = HttpStatus.TEMPORARY_REDIRECT
-        response.headers.location = URI.create("http://localhost:3000")
+        response.headers.location = URI.create(redirectUrl)
     }
 
 }
