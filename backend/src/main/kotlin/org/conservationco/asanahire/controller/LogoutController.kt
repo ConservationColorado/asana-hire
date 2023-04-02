@@ -7,7 +7,7 @@ import org.springframework.web.server.WebSession
 
 @RestController
 @RequestMapping("/oauth2/logout")
-class OAuth2LogoutController {
+class LogoutController {
 
     @PostMapping
     fun logout(session: WebSession) = session.invalidate()
