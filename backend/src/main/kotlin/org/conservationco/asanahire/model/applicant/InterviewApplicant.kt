@@ -17,6 +17,7 @@ data class InterviewApplicant(
     @AsanaCustomField("Email")              override var email: String = "",
     @AsanaCustomField("Phone number")       override var phoneNumber: String = "",
     @AsanaCustomField("References")         override var references: String = "",
+    @AsanaCustomField("Fluent in Spanish?") override var bilingual: String = "",
     @AsanaCustomField("Rating")             var hiringManagerRating: String = "",
     @AsanaCustomField("Interview stage")    var interviewStage: String = "",
     @AsanaCustomField("Interview substage") var interviewSubstage: String = "",

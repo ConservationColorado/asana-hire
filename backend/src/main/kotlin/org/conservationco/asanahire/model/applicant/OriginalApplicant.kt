@@ -14,6 +14,7 @@ data class OriginalApplicant(
     @AsanaCustomField("Email")                               override var email: String = "",
     @AsanaCustomField("Phone number")                        override var phoneNumber: String = "",
     @AsanaCustomField("References")                          override var references: String = "",
+    @AsanaCustomField("Fluent in Spanish?")                  override var bilingual: String = "",
     @AsanaCustomField("How did you learn about us?")         var learnedAboutUs: Array<String> = emptyArray(),
     @AsanaCustomField("How did you learn about us? (other)") var learnedAboutUsOther: String = "",
     @AsanaCustomField("Race / Ethnicity")                    var race: Array<String> = emptyArray(),

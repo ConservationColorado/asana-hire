@@ -1,6 +1,6 @@
 # Welcome!
 
-This repository is home to `asana-hire`, an open source ([MIT license](LICENSE)) recruitment management system designed
+This repository is home to `asana-hire`, an open source ([view license here](LICENSE)) recruitment management system designed
 for small (<50 staff) organizations that use Asana. Use this app to elevate candidate experience, get insight into
 hiring demographics and outcomes, and automate administrative work. Best of all, the app is designed for anyone to use
 (not just developers). Read on to learn more.
