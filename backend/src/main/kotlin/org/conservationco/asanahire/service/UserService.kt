@@ -2,7 +2,7 @@ package org.conservationco.asanahire.service
 
 import org.conservationco.asanahire.model.user.User
 import org.conservationco.asanahire.repository.UserRepository
-import org.conservationco.asanahire.security.valueOfIgnoreCase
+import org.conservationco.asanahire.model.user.valueOfIgnoreCase
 import org.conservationco.asanahire.util.handleSaveError
 import org.springframework.security.core.Authentication
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken

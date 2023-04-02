@@ -1,7 +1,6 @@
 package org.conservationco.asanahire.model.user
 
 import org.springframework.data.annotation.Id
-import org.conservationco.asanahire.security.AuthProvider
 import org.springframework.data.relational.core.mapping.Table
 
 @Table(name = "`User`")
