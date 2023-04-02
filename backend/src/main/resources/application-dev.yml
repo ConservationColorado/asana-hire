@@ -1,0 +1,4 @@
+logging:
+  level:
+    org.springframework.data.r2dbc: debug
+    org.springframework.security: debug
