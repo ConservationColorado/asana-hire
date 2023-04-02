@@ -1,4 +1,4 @@
-package org.conservationco.asanahire.security
+package org.conservationco.asanahire.model.user
 
 import java.util.*
 
