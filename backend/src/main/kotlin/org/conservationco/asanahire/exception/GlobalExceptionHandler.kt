@@ -1,6 +1,5 @@
 package org.conservationco.asanahire.exception
 
-import org.conservationco.exception.JobNotFoundException
 import org.springframework.http.HttpStatus
 import org.springframework.web.ErrorResponse
 import org.springframework.web.bind.annotation.ControllerAdvice

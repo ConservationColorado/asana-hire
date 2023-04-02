@@ -9,7 +9,7 @@ import org.conservationco.asanahire.model.asana.JobSource
 import org.conservationco.asanahire.model.job.Job
 import org.conservationco.asanahire.repository.JobRepository
 import org.conservationco.asanahire.util.handleSaveError
-import org.conservationco.exception.JobNotFoundException
+import org.conservationco.asanahire.exception.JobNotFoundException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
