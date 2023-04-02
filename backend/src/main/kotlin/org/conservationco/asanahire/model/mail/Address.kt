@@ -1,4 +1,4 @@
-package org.conservationco.asanahire.domain.mail
+package org.conservationco.asanahire.model.mail
 
 data class Address(
     val name: String,

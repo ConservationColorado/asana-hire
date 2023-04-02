@@ -5,7 +5,6 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/sync")
-@CrossOrigin
 class SyncController(
     private val syncService: SyncService,
 ) {

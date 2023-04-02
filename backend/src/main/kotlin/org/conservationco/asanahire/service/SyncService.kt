@@ -3,19 +3,18 @@ package org.conservationco.asanahire.service
 import com.asana.models.Project
 import com.asana.models.Task
 import com.asana.models.Workspace
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 import org.conservationco.asana.asanaContext
-import org.conservationco.asanahire.domain.Job
-import org.conservationco.asanahire.domain.InterviewApplicant
-import org.conservationco.asanahire.domain.OriginalApplicant
-import org.conservationco.asanahire.domain.asana.ApplicantSyncPair
+import org.conservationco.asanahire.model.applicant.InterviewApplicant
+import org.conservationco.asanahire.model.applicant.OriginalApplicant
+import org.conservationco.asanahire.model.asana.ApplicantSyncPair
+import org.conservationco.asanahire.model.job.Job
 import org.conservationco.asanahire.repository.JobRepository
-import org.conservationco.asanahire.repository.getJob
 import org.conservationco.asanahire.requests.JobSyncRequest
 import org.conservationco.asanahire.requests.RequestState
 import org.conservationco.asanahire.util.*
-import org.conservationco.asanahire.util.applicantSerializingFn
-import org.conservationco.asanahire.util.updateReceiptOfApplication
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
@@ -46,17 +45,14 @@ class SyncService(
     private fun launchNewSync(jobId: Long): JobSyncRequest {
         val newRequest = JobSyncRequest(jobId)
         ongoingSyncs[jobId] = newRequest
-        syncScope.launch {
-            withContext(Dispatchers.IO) {
-                jobRepository.getJob(jobId) { job ->
-                    launch { checkIfSyncNeeded(job) }
-                }
-            }
-        }
+        jobRepository
+            .findById(jobId)
+            .doOnSuccess { checkIfSyncNeeded(it) }
+            .subscribe()
         return newRequest
     }
 
-    private suspend fun checkIfSyncNeeded(job: Job) = coroutineScope {
+    private fun checkIfSyncNeeded(job: Job) {
         val snapshot = SyncedProjectsSnapshot(
             job.title,
             Project().apply { gid = job.applicationProjectId },
@@ -66,7 +62,7 @@ class SyncService(
         ongoingSyncs[job.id] = JobSyncRequest(job.id, RequestState.COMPLETE)
     }
 
-    private suspend fun startProjectSync(snapshot: SyncedProjectsSnapshot) = coroutineScope {
+    private fun startProjectSync(snapshot: SyncedProjectsSnapshot) {
         val (jobTitle, source, destination) = snapshot
         val applicants = getNewApplicants(snapshot)
         for (pair in applicants) {
@@ -84,7 +80,7 @@ class SyncService(
      *
      * These are completed synchronously with guaranteed completion order.
      */
-    private suspend fun syncSingleApplicant(
+    private fun syncSingleApplicant(
         applicantPair: ApplicantSyncPair,
         destination: Project,
         jobTitle: String,
@@ -96,10 +92,10 @@ class SyncService(
         originalApplicant.updateReceiptOfApplication(source)
     }
 
-    private suspend fun sendReceiptEmail(
+    private fun sendReceiptEmail(
         originalApplicant: OriginalApplicant,
         jobTitle: String
-    ) {
+    ) = syncScope.launch {
         mailer.emailReceiptOfApplication(
             originalApplicant.preferredName,
             originalApplicant.email,

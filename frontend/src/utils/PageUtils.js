@@ -30,6 +30,7 @@ export function spinner(message, size) {
 export function getJsonPromise(url) {
     const options = {
         method: "GET",
+        credentials: 'include',
         headers: {
             "Content-Type": "application/json"
         }

@@ -1,3 +1,28 @@
 logging:
   level:
-    org.springframework.beans: INFO
+    org.springframework.data.r2dbc: debug
+    org.springframework.security: debug
+spring:
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  r2dbc:
+    url: r2dbc:h2:mem:///testdb?options=DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    username: sa
+    password:
+    initialization-mode: always
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+            client-id: ${google_client_id}
+            client-secret: ${google_client_secret}
+            authorization-grant-type: authorization_code
+            scope:
+              - openid
+              - profile
+              - email
+              - "https://www.googleapis.com/auth/gmail.modify"

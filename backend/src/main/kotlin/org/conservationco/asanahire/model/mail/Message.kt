@@ -1,4 +1,4 @@
-package org.conservationco.asanahire.domain.mail
+package org.conservationco.asanahire.model.mail
 
 interface Message {
     val sender: Address

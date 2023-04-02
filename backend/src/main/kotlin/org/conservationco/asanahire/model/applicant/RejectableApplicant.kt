@@ -1,4 +1,4 @@
-package org.conservationco.asanahire.domain
+package org.conservationco.asanahire.model.applicant
 
 data class RejectableApplicant(
     val id: String,

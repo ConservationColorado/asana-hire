@@ -1,4 +1,4 @@
-package org.conservationco.asanahire.domain.asana
+package org.conservationco.asanahire.model.asana
 
 class InterviewProject(
     val id: String,

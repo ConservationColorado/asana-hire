@@ -1,4 +1,4 @@
-package org.conservationco.asanahire.domain.asana
+package org.conservationco.asanahire.model.asana
 
 import com.asana.models.Portfolio
 

@@ -1,4 +1,4 @@
-package org.conservationco.asanahire.domain.mail
+package org.conservationco.asanahire.model.mail
 
 enum class Protocol(
     val host: String,

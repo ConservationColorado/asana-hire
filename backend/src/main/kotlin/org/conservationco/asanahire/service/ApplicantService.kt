@@ -5,13 +5,13 @@ import com.asana.models.Workspace
 import kotlinx.coroutines.*
 import org.conservationco.asana.asanaContext
 import org.conservationco.asana.util.AsanaTable
-import org.conservationco.asanahire.domain.*
-import org.conservationco.asanahire.domain.Job
+import org.conservationco.asanahire.model.applicant.*
+import org.conservationco.asanahire.model.job.Job
 import org.conservationco.asanahire.repository.JobRepository
-import org.conservationco.asanahire.repository.getJob
 import org.conservationco.asanahire.util.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import reactor.core.publisher.Mono
 import java.time.LocalDateTime
 
 @Service
@@ -34,22 +34,23 @@ class ApplicantService(
         }
     }
 
-    fun getAllNeedingRejection(jobId: Long): Deferred<List<RejectableApplicant>> =
-        jobRepository.getJob(jobId) { job ->
-            return@getJob applicantScope.async { rejectableApplicants(job) }
-        }
+    fun getAllNeedingRejection(jobId: Long): Mono<List<RejectableApplicant>> =
+        jobRepository
+            .findById(jobId)
+            .map { rejectableApplicants(it) }
 
-    fun rejectApplicant(applicant: RejectableApplicant) {
-        applicantScope.launch {
-            jobRepository.getJob(applicant.jobId) { job ->
-                launch { updateRejectionStatusFor(job, applicant) }
-                launch { sendRejectionEmail(applicant, job) }
+    fun rejectApplicant(applicant: RejectableApplicant) =
+        jobRepository
+            .findById(applicant.jobId)
+            .doOnSuccess { job ->
+                updateRejectionStatusFor(job, applicant)
+                sendRejectionEmail(applicant, job)
             }
-        }
-    }
 
-    private suspend fun sendRejectionEmail(applicant: RejectableApplicant, job: Job) =
-        mailer.emailRejection(applicant.preferredName, applicant.email, job.title)
+    private fun sendRejectionEmail(applicant: RejectableApplicant, job: Job) =
+        applicantScope.launch {
+            mailer.emailRejection(applicant.preferredName, applicant.email, job.title)
+        }
 
     private fun updateRejectionStatusFor(
         job: Job,
