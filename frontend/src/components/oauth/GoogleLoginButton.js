@@ -1,29 +1,17 @@
-import React from "react";
+import React, {useContext} from "react";
 import {Button} from "flowbite-react";
-import {useGoogleLogin} from '@react-oauth/google';
+import {AuthContext} from "./AuthProvider";
 
-function GoogleLoginButton({onSuccess, onError}) {
+function GoogleLoginButton() {
+    const {oauthLogin} = useContext(AuthContext);
 
-    const handleSuccess = async (tokenResponse) => {
-        onSuccess(tokenResponse);
-    };
-
-    const handleFailure = (error) => {
-        onError(error);
-    };
-
-    const handleClick = useGoogleLogin({
-        onSuccess: handleSuccess,
-        onFailure: handleFailure,
-        flow: "auth-code",
-        scope: "https://www.googleapis.com/auth/gmail.modify",
-        redirect_uri: "http://localhost:8080/auth/google",
-        ux_mode: "popup",
-        hosted_domain: "conservationco.org"
-    });
+    function handleClick() {
+        const provider = "google";
+        oauthLogin(provider);
+    }
 
     return (
-        <Button color="gray" pill={true} onClick={handleClick}>
+        <Button pill={true} onClick={handleClick}>
             🔐 Continue with Google
         </Button>
     );
