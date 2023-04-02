@@ -7,7 +7,7 @@ import org.springframework.security.config.annotation.web.reactive.EnableWebFlux
 import org.springframework.security.config.web.server.ServerHttpSecurity
 import org.springframework.security.web.server.SecurityWebFilterChain
 import org.springframework.security.web.server.authentication.ServerAuthenticationSuccessHandler
-import org.springframework.security.web.server.csrf.CookieServerCsrfTokenRepository
+import org.springframework.security.web.server.csrf.ServerCsrfTokenRepository
 import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.reactive.CorsConfigurationSource
 import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource
@@ -19,24 +19,24 @@ class SecurityConfiguration {
     @Autowired
     private lateinit var successHandler: ServerAuthenticationSuccessHandler
 
+    @Autowired
+    private lateinit var csrfTokenRepository: ServerCsrfTokenRepository
+
     @Bean
     fun securityWebFilterChain(http: ServerHttpSecurity): SecurityWebFilterChain {
         http
             .authorizeExchange { authSpec ->
                 authSpec
-                    .anyExchange()
-                    .authenticated()
-            }
-            .logout { logoutSpec ->
-                logoutSpec
-                    .logoutUrl("/")
+                    .pathMatchers("/", "/login", "/error").permitAll()
+                    .anyExchange().authenticated()
             }
             .cors { corsSpec ->
-                corsSpec.configurationSource(corsConfigurationSource())
+                corsSpec
+                    .configurationSource(corsConfigurationSource())
             }
             .csrf { csrfSpec ->
                 csrfSpec
-                    .csrfTokenRepository(CookieServerCsrfTokenRepository.withHttpOnlyFalse())
+                    .csrfTokenRepository(csrfTokenRepository)
             }
             .oauth2Login { oAuth2LoginSpec ->
                 oAuth2LoginSpec
