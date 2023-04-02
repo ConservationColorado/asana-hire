@@ -20,7 +20,7 @@ function JobDropdown({selected, onDropdownChange}) {
             <select defaultValue={selected} onChange={onDropdownChange}>
                 <option disabled key={selected}>{selected}</option>
                 {jobs.map((job) =>
-                    <option key={job.title}>{job.title}</option>
+                    <option key={job.id}>{job.title}</option>
                 )}
             </select>
         );
