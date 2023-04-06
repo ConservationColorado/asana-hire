@@ -1,5 +1,5 @@
 import React, {createContext, useEffect, useState} from "react";
-import Cookies from 'js-cookie';
+import {getApiPromise, postApiPromise, API_URL} from '../../utils/PageUtils'
 
 export const AuthContext = createContext();
 
@@ -8,10 +8,7 @@ function AuthProvider({children}) {
     const [credential, setCredential] = useState(null);
 
     useEffect(() => {
-        fetch('http://localhost:8080/user/me', {
-            method: 'GET',
-            credentials: 'include'
-        })
+        getApiPromise('/user/me')
             .then((response) => {
                 if (response.ok) {
                     return response.json();
@@ -20,8 +17,7 @@ function AuthProvider({children}) {
                 }
             })
             .then((data) => {
-                setIsAuthenticated(true);
-                setCredential(data);
+                loginSuccess(data);
             })
             .catch((error) => {
                 destroySession();
@@ -29,22 +25,12 @@ function AuthProvider({children}) {
     }, []);
 
     function oauthLogin(provider) {
-        let uri = "http://localhost:8080/oauth2/authorization/" + provider;
+        let uri = API_URL + '/oauth2/authorization/' + provider;
         window.location.href = uri;
     }
 
-    function formLogin() {
-        const uri = "http://localhost:8080/login";
-    }
-
     function logout() {
-        fetch('http://localhost:8080/oauth2/logout', {
-            method: 'POST',
-            credentials: 'include',
-            headers: {
-                "X-XSRF-TOKEN": getXSRFToken(),
-            },
-        })
+        postApiPromise('/oauth2/logout');
         destroySession();
     }
 
@@ -58,13 +44,8 @@ function AuthProvider({children}) {
         setCredential(null);
     }
 
-    function getXSRFToken() {
-        let csrfToken = Cookies.get('XSRF-TOKEN');
-        return csrfToken;
-    }
-
     return (
-        <AuthContext.Provider value={{isAuthenticated, getXSRFToken, credential, formLogin, oauthLogin, logout}}>
+        <AuthContext.Provider value={{isAuthenticated, credential, oauthLogin, logout}}>
             {children}
         </AuthContext.Provider>
     );

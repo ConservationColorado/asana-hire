@@ -1,12 +1,13 @@
 import {useEffect, useState} from "react";
-import {getJsonPromise, loadingSpinner} from "../../utils/PageUtils";
+import {getApiPromise, loadingSpinner} from "../../utils/PageUtils";
 
 function JobDropdown({selected, onDropdownChange}) {
     const [isLoading, setIsLoading] = useState(true);
     const [jobs, setJobs] = useState([]);
 
     useEffect(() => {
-        getJsonPromise("http://localhost:8080/jobs")
+        getApiPromise("/jobs")
+            .then((response) => response.json())
             .then((data) => {
                 setIsLoading(false)
                 setJobs(data)

@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import Notification from '../ui/Notification';
-import {spinner} from '../../utils/PageUtils';
+import {putApiPromise, spinner} from '../../utils/PageUtils';
 
 function SyncHandler({job}) {
     const [isSyncing, setIsSyncing] = useState(false);
@@ -10,7 +10,7 @@ function SyncHandler({job}) {
         let interval;
         if (isSyncing) {
             interval = setInterval(() => {
-                fetch(`http://localhost:8080/sync/${job.id}`, {method: "PUT"})
+                putApiPromise('/sync/' + job.id)
                     .then(response => response.json())
                     .then(data => {
                         if (lastResponse !== null && JSON.stringify(data) !== JSON.stringify(lastResponse)) {

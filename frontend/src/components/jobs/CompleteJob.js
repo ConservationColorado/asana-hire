@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import {getJsonPromise, loadingSpinner} from "../../utils/PageUtils";
+import {getApiPromise, loadingSpinner} from "../../utils/PageUtils";
 import JobCard from "../../components/jobs/JobCard";
 
 function CompleteJob({id}) {
@@ -7,7 +7,8 @@ function CompleteJob({id}) {
     const [job, setJob] = useState([]);
 
     useEffect(() => {
-        getJsonPromise(`http://localhost:8080/jobs/${id}`)
+        getApiPromise(`/jobs/${id}`)
+            .then((response) => response.json())
             .then((data) => {
                 setIsLoading(false)
                 setJob(data)
