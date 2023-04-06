@@ -1,6 +1,6 @@
 import {Link} from 'react-router-dom';
 import {useEffect, useState} from "react";
-import {getJsonPromise, plainSpinner} from '../../utils/PageUtils';
+import {getApiPromise, plainSpinner} from '../../utils/PageUtils';
 import RejectableApplicant from './RejectableApplicant';
 import {Button, Table} from 'flowbite-react';
 
@@ -9,7 +9,7 @@ function RejectableApplicantList({job, close, closeAndConfirm}) {
     const [rejectableApplicants, setRejectableApplicants] = useState([]);
 
     useEffect(() => {
-        getJsonPromise(`http://localhost:8080/applicants/${job.id}/reject`)
+        getApiPromise(`/applicants/${job.id}/reject`)
             .then((data) => {
                 setIsLoading(false)
                 setRejectableApplicants(data)

@@ -1,4 +1,5 @@
 import {Spinner} from "flowbite-react";
+import Cookies from 'js-cookie';
 
 export function loadingSpinner() {
     return (
@@ -27,14 +28,54 @@ export function spinner(message, size) {
     );
 }
 
-export function getJsonPromise(url) {
-    const options = {
-        method: "GET",
-        credentials: 'include',
-        headers: {
-            "Content-Type": "application/json"
+export function getApiPromise(resource) {
+    return fetchApi(
+        resource,
+        {
+            method: "GET",
+            credentials: 'include',
         }
-    }
-    return fetch(url, options)
-        .then((response) => response.json());
+    );
+}
+
+export function putApiPromise(resource) {
+    return fetchApi(
+        resource,
+        {
+            method: "PUT",
+            credentials: 'include',
+            headers: {
+                'Accept': 'application/json',
+                "Content-Type": "application/json",
+                "X-XSRF-TOKEN": getXSRFToken()
+            }
+        }
+    );
+}
+
+export function postApiPromise(resource) {
+    return fetchApi(
+        resource,
+        {
+            method: "PUT",
+            credentials: 'include',
+            headers: {
+                'Accept': 'application/json',
+                "Content-Type": "application/json",
+                "X-XSRF-TOKEN": getXSRFToken()
+            }
+        }
+    );
+}
+
+export const API_URL = process.env.REACT_APP_API_SERVER_URL;
+
+function fetchApi(resource, options) {
+    const uri = API_URL + resource;
+    return fetch(uri, options)
+}
+
+function getXSRFToken() {
+    let csrfToken = Cookies.get('XSRF-TOKEN');
+    return csrfToken;
 }
