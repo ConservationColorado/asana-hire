@@ -16,4 +16,12 @@ class GlobalExceptionHandler {
             ex.message.toString()
         ).build()
 
+    @ExceptionHandler(SyncNotFoundException::class)
+    fun handleSyncNotFoundException(ex: SyncNotFoundException) =
+        ErrorResponse.builder(
+            ex,
+            HttpStatus.UNPROCESSABLE_ENTITY,
+            ex.message.toString()
+        ).build()
+
 }
