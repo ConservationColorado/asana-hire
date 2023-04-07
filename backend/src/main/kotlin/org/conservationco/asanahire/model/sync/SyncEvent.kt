@@ -1,18 +1,16 @@
 package org.conservationco.asanahire.model.sync
 
 import org.springframework.data.annotation.Id
+import org.springframework.data.relational.core.mapping.Column
 import org.springframework.data.relational.core.mapping.Table
 import java.time.LocalDateTime
 
-@Table(name = "SYNC_EVENT")
+@Table("SYNC_EVENT")
 data class SyncEvent(
     @Id
-    val id: Long,
-    val jobId: Long,
-    val createdOn: LocalDateTime,
+    val id: Long = 0L,
+    @Column("JOB_ID")
+    val jobId: Long = 0L,
+    val createdOn: LocalDateTime = LocalDateTime.now(),
     val status: RequestState = RequestState.NOT_STARTED,
-) {
-    fun isStarted() = status != RequestState.NOT_STARTED
-    fun isComplete() = status == RequestState.COMPLETE
-    fun isInProgress() = status == RequestState.IN_PROGRESS
-}
+)
