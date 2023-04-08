@@ -100,7 +100,7 @@
         <dependency>
             <groupId>com.github.OliverAbdulrahim</groupId>
             <artifactId>kotlin-asana</artifactId>
-            <version>69f2199908</version>
+            <version>39de515f38</version>
         </dependency>
         <dependency>
             <groupId>net.axay</groupId>
