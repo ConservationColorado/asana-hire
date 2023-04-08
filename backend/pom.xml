@@ -29,7 +29,7 @@
 
     <properties>
         <java.version>17</java.version>
-        <kotlin.version>1.8.0</kotlin.version>
+        <kotlin.version>1.8.20</kotlin.version>
     </properties>
 
     <dependencies>
@@ -100,7 +100,7 @@
         <dependency>
             <groupId>com.github.OliverAbdulrahim</groupId>
             <artifactId>kotlin-asana</artifactId>
-            <version>69f2199908</version>
+            <version>39de515f38</version>
         </dependency>
         <dependency>
             <groupId>net.axay</groupId>
@@ -117,11 +117,22 @@
             <artifactId>simplekotlinmail-client</artifactId>
             <version>1.4.0</version>
         </dependency>
+        <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-stdlib</artifactId>
+            <version>${kotlin.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-test</artifactId>
+            <version>${kotlin.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
-        <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
-        <testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
+        <sourceDirectory>src/main/kotlin</sourceDirectory>
+        <testSourceDirectory>src/test/kotlin</testSourceDirectory>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
@@ -131,6 +142,22 @@
                 <groupId>org.jetbrains.kotlin</groupId>
                 <artifactId>kotlin-maven-plugin</artifactId>
                 <version>${kotlin.version}</version>
+                <executions>
+                    <execution>
+                        <id>compile</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>test-compile</id>
+                        <phase>test-compile</phase>
+                        <goals>
+                            <goal>test-compile</goal>
+                        </goals>
+                    </execution>
+                </executions>
                 <configuration>
                     <args>
                         <arg>-Xjsr305=strict</arg>

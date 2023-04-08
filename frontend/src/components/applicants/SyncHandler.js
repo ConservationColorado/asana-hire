@@ -10,7 +10,7 @@ function SyncHandler({job}) {
         let interval;
         if (isSyncing) {
             interval = setInterval(() => {
-                putApiPromise('/sync/' + job.id)
+                putApiPromise('/sync/start/' + job.id)
                     .then(response => response.json())
                     .then(data => {
                         if (lastResponse !== null && JSON.stringify(data) !== JSON.stringify(lastResponse)) {
