@@ -38,13 +38,10 @@ class UserService(
             .save(user)
             .doOnSuccess { logger.info(message) }
 
-    private fun handleUser(newUser: User, existingUser: User): Mono<User> {
-        return if (existingUser != newUser) {
+    private fun handleUser(newUser: User, existingUser: User) =
+        if (existingUser != newUser)
             saveUser(newUser, "Updated existing user with ${existingUser.provider} OAuth2")
-        } else {
-            Mono.empty()
-        }
-    }
+        else Mono.empty()
 
 }
 
