@@ -6,6 +6,8 @@ import org.conservationco.asanahire.repository.UserRepository
 import org.conservationco.asanahire.util.handleSaveError
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClient
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken
 import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser
 import org.springframework.security.oauth2.core.user.OAuth2User
@@ -17,6 +19,7 @@ import java.util.logging.Logger
 @Service
 class UserService(
     private val userRepository: UserRepository,
+    private val authorizedClientService: OAuth2AuthorizedClientService
 ) {
 
     private val logger = Logger.getLogger(UserService::class.qualifiedName)
@@ -44,6 +47,16 @@ class UserService(
         if (existingUser != newUser)
             saveUser(newUser, "Updated existing user with ${existingUser.provider} OAuth2")
         else Mono.empty()
+
+    internal fun getCurrentlyAuthenticatedUserAccessToken(): String {
+        val oauthToken = oAuth2AuthenticationToken()
+        val clientRegistrationId = oauthToken.authorizedClientRegistrationId
+        val authorizedClient = authorizedClientService.loadAuthorizedClient<OAuth2AuthorizedClient>(
+            clientRegistrationId,
+            oauthToken.name
+        )
+        return authorizedClient.accessToken.tokenValue
+    }
 
     internal fun getCurrentlyAuthenticatedUserEmail(): String {
         val authentication = oAuth2AuthenticationToken()
