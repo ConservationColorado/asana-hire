@@ -1,12 +1,14 @@
 package org.conservationco.asanahire.service
 
 import org.conservationco.asanahire.model.user.User
-import org.conservationco.asanahire.repository.UserRepository
 import org.conservationco.asanahire.model.user.valueOfIgnoreCase
+import org.conservationco.asanahire.repository.UserRepository
 import org.conservationco.asanahire.util.handleSaveError
 import org.springframework.security.core.Authentication
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken
 import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser
+import org.springframework.security.oauth2.core.user.OAuth2User
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 import java.util.*
@@ -42,6 +44,20 @@ class UserService(
         if (existingUser != newUser)
             saveUser(newUser, "Updated existing user with ${existingUser.provider} OAuth2")
         else Mono.empty()
+
+    internal fun getCurrentlyAuthenticatedUserEmail(): String {
+        val authentication = oAuth2AuthenticationToken()
+        val user = authentication.principal as OAuth2User
+        return user.attributes["email"] as String
+    }
+
+    private fun oAuth2AuthenticationToken(): OAuth2AuthenticationToken =
+        SecurityContextHolder
+            .getContext()
+            .authentication
+            ?.takeIf { it.isAuthenticated }
+            ?.let { it as OAuth2AuthenticationToken }
+            ?: throw IllegalStateException("User not authenticated or OAuth2 token not found.")
 
 }
 
