@@ -119,21 +119,6 @@
             <version>39de515f38</version>
         </dependency>
         <dependency>
-            <groupId>net.axay</groupId>
-            <artifactId>simplekotlinmail-core</artifactId>
-            <version>1.4.0</version>
-        </dependency>
-        <dependency>
-            <groupId>net.axay</groupId>
-            <artifactId>simplekotlinmail-html</artifactId>
-            <version>1.4.0</version>
-        </dependency>
-        <dependency>
-            <groupId>net.axay</groupId>
-            <artifactId>simplekotlinmail-client</artifactId>
-            <version>1.4.0</version>
-        </dependency>
-        <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-stdlib</artifactId>
             <version>${kotlin.version}</version>
