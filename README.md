@@ -1,82 +1,102 @@
 # Welcome!
 
-This repository is home to `asana-hire`, an open source ([view license here](LICENSE)) recruitment management system designed
-for small (<50 staff) organizations that use Asana. Use this app to elevate candidate experience, get insight into
-hiring demographics and outcomes, and automate administrative work. Best of all, the app is designed for anyone to use
-(not just developers). Read on to learn more.
+This repository is home to `asana-hire`, an open source ([view license here](LICENSE)) recruitment management web
+application designed for organizations that use Asana. This app is simple to use, lightweight, gives you insight into
+your hiring process, and automates your administrative work. Read on to learn more!
 
-# Quick demo
+## Quick demo
 
 <div align="center">
   <img src="docs/demo.gif" alt="asana-hire demo in an animated image">
   <p>Here's a quick demo of the application, including pages for individual jobs.</p>
 </div>
 
+### Background and motivation
+
+I first started developing this application to do my job more efficiently at my organization. The tool started out as a
+few simple Java classes I wrote to copy data from one place to another, run analytics, and send automated emails. As
+we've adopted the tool at our organization, the application has necessarily grown from a set of command line tools to a
+full stack site.
+
+### What it can do
+
+- Copy applicants from one project to another while hiding sensitive data from the interview committee
+- Send applicants update emails, including receipt of application, release from process, or other custom messages
+- View anonymized hiring data in charts and graphs through Asana's reporting feature
+- User authentication and authorization via organization-bound Google OIDC and OAuth2
+- [Run or deploy the application easily using Docker and Docker Compose](#run-or-deploy-the-application-with-docker-compose)
+- [Separate your deployments with environment variables](#environment-variables)
+
+### Planned features
+
+- One click creation of jobs materials, including Asana projects
+- Admin console within the application
+- Custom job forms you can create and embed on your site
+- A fork of this repository that is standalone, independent of Asana
+
 # Getting started
 
 ### Get a copy of this repository
+
 You'll want to get a local copy of everything in this repository. There are a few ways of doing this. You can use the
-`git` command, if you have it installed: 
+`git` command in your terminal, if you have it installed:
+
 ```shell
 # over HTTPS
 git clone https://github.com/OliverAbdulrahim/asana-hire.git
+```
 
+```shell
 # over SSH
 git clone git@github.com:OliverAbdulrahim/asana-hire.git
 ```
 
-Alternatively, you can [download a `.zip` file containing of the main branch at this link.](https://github.com/OliverAbdulrahim/asana-hire/archive/refs/heads/main.zip)
+Alternatively, you can
+[download a `.zip` file containing of the main branch at this link.](https://github.com/OliverAbdulrahim/asana-hire/archive/refs/heads/main.zip)
 
 ### Run or deploy the application with Docker Compose
-Once you have the repository copied locally, you can run or deploy it using [Docker Compose](https://docs.docker.com/compose/)
+
+Once you have the repository copied locally, you can run or deploy it using
+[Docker Compose](https://docs.docker.com/compose/). Run the following `docker compose` command in your terminal:
 
 ```shell
 docker compose --env-file <your env file> up
 ```
-You may optionally include the `-d` flag to start the containers in detached mode (run in the background of your 
-terminal). 
 
-You may also use [Docker Desktop](https://docs.docker.com/compose/install/) user interface to run or deploy the 
-application
+You may optionally include the `-d` flag to start the containers in detached mode (run in the background of your
+terminal).
+
+As an alternative to the command line, [Docker Desktop](https://docs.docker.com/compose/install/) has a user interface
+you can use to run the application.
 
 ### Environment variables
-To run the app, you'll need to supply these environment variables in an `.env` file (pass that into Docker Compose):
-```shell
-asana_access_token=<your Asana access token>
-application_portfolio_gid=<the global identifier for the Asana portfolio with your application projects>
-interview_portfolio_gid=<the global identifier for the Asana portfolio with your interview projects>
-email_username=<email address to send applicant updates from>
-email_password=<app password to that email (authorized for a mail app)>
+
+To run the app, you'll need to supply the environment variables specified below:
+
+```
+# Asana configuration
+asana_access_token=                 # your Asana access token
+workspace_gid=                      # the Asana global identifier for your workspace
+application_portfolio_gid=          # the Asana global identifier for the portfolio containing your application projects
+interview_portfolio_gid=            # the Asana global identifier for the portfolio containing your interview projects
+
+# OAuth2 client ids and secrets
+google_client_id=                   # your Google client ID, with the gmail.modify scope, limited to your organization
+google_client_secret=               # your Google client secret
+
+# Base urls
+REACT_APP_CLIENT_URL=               # default is http://localhost:3000
+REACT_APP_API_SERVER_URL=           # default is http://localhost:8080
+
+# Database configuration
+DB_URL=                             # your SQL database url
+DB_USERNAME=                        # your SQL database username
+DB_PASSWORD=                        # your SQL database password
+
+# Spring configuration
+SPRING_PROFILES_ACTIVE=             # a "dev" profile is provided in this project
 ```
 
-Alternatively, if you use a secret manager, or if you cannot pass in an `.env` file, supply each environment variable
-individually when using Docker Compose.
-
-Create separate `.env` files for your production and development environments.
-
-# Core tenants and specifications
-Here are the specifications `asana-hire` aims to meet:
-
-* Easy application process for job seekers
-    * Distinct application forms for each job
-    * Applicants only enter in their information once
-    * Communication tailored to each step to keep applicants in the loop
-* Streamlined process for the hiring team
-    * Manage the interview process in one place, start to finish
-    * View live (always on), anonymous reports on how recruiting is going
-* Data safety and security in operations
-    * Automation wherever possible for efficiency and error reduction
-* Application maintainability and robustness
-    * Helpful error messages, ease of configurability
-    * Containerized for platform independence and portability
-
-# Features
-
-This application extends the functionality of the Asana work management tool using its REST API. This app requires an
-Asana Premium plan. Core features of asana-hire include:
-
-* Easily communicate with candidates, up to full automation of base communications
-* Anonymous data reports that anyone in your organization with Asana's reporting feature
-* Strict separation of concerns: hiring managers and the interview committee are blind to all sensitive applicant
-  information
-* One click creation jobs materials, including Asana projects
+I recommend that you store these in an `.env` file that you keep outside your repository. You can also pass each
+variable individually into your Docker Compose command. Create separate `.env` files for your production and development
+environments.

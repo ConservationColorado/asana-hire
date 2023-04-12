@@ -4,12 +4,12 @@ import com.asana.models.Portfolio
 import com.asana.models.Project
 import org.conservationco.asana.asanaContext
 import org.conservationco.asanahire.exception.EmptyPortfolioException
+import org.conservationco.asanahire.exception.JobNotFoundException
 import org.conservationco.asanahire.exception.MismatchedHiringProjectsException
 import org.conservationco.asanahire.model.asana.JobSource
 import org.conservationco.asanahire.model.job.Job
 import org.conservationco.asanahire.repository.JobRepository
-import org.conservationco.asanahire.util.handleSaveError
-import org.conservationco.asanahire.exception.JobNotFoundException
+import org.conservationco.asanahire.exception.handleSaveError
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux

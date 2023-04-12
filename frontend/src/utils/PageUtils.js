@@ -57,7 +57,7 @@ export function postApiPromise(resource) {
     return fetchApi(
         resource,
         {
-            method: "PUT",
+            method: "POST",
             credentials: 'include',
             headers: {
                 'Accept': 'application/json',
