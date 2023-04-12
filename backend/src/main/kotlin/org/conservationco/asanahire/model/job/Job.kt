@@ -5,10 +5,10 @@ import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Table
 
 @Table(name = "Job")
-open class Job : AsanaSerializable<Job> {
+data class Job(
     @Id
-    open var id: Long = 0L
-    open var title: String = ""
-    open var applicationProjectId: String = ""
-    open var interviewProjectId: String = ""
-}
+    var id: Long = 0L,
+    var title: String = "",
+    var applicationProjectId: String = "",
+    var interviewProjectId: String = "",
+) : AsanaSerializable<Job>
