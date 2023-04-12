@@ -54,51 +54,51 @@ class ApplicantService(
             .then()
     }
 
-    private fun updateRejectionStatusFor(
-        job: Job,
-        applicant: RejectableApplicant
-    ) {
-        asanaContext {
-            val project = project(job.applicationProjectId)
-            task(applicant.id)
-                .get()
-                .convertToOriginalApplicant()
-                .updateRejectionStatus(project)
+}
+
+private fun rejectableApplicants(job: Job): List<RejectableApplicant> {
+    val originalApplicants = AsanaTable.tableFor<OriginalApplicant>(
+        job.applicationProjectId,
+        deserializingFn = applicantDeserializingFn()
+    )
+    val interviewApplicants = AsanaTable.tableFor<InterviewApplicant>(
+        job.interviewProjectId,
+        deserializingFn = applicantDeserializingFn()
+    )
+    if (originalApplicants.size() == 0 || interviewApplicants.size() == 0) return emptyList()
+
+    val applicantsThatNeedRejection = interviewApplicants
+        .getAll()
+        .filter { it.needsRejection() }
+        .associateBy { it.email }
+    if (applicantsThatNeedRejection.isEmpty()) return emptyList()
+
+    return originalApplicants
+        .getAll()
+        .asSequence()
+        .filter { !it.hasBeenRejected() }
+        .filter { applicantsThatNeedRejection.containsKey(it.email) }
+        .map {
+            RejectableApplicant(
+                it.id,
+                job.id,
+                it.name,
+                it.preferredName,
+                it.email
+            )
         }
+        .toList()
+}
+
+private fun updateRejectionStatusFor(
+    job: Job,
+    applicant: RejectableApplicant
+) {
+    asanaContext {
+        val project = project(job.applicationProjectId)
+        task(applicant.id)
+            .get()
+            .convertToOriginalApplicant()
+            .updateRejectionStatus(project)
     }
-
-    private fun rejectableApplicants(job: Job): List<RejectableApplicant> {
-        val originalApplicants = AsanaTable.tableFor<OriginalApplicant>(
-            job.applicationProjectId,
-            deserializingFn = applicantDeserializingFn()
-        )
-        val interviewApplicants = AsanaTable.tableFor<InterviewApplicant>(
-            job.interviewProjectId,
-            deserializingFn = applicantDeserializingFn()
-        )
-        if (originalApplicants.size() == 0 || interviewApplicants.size() == 0) return emptyList()
-
-        val applicantsThatNeedRejection = interviewApplicants
-            .getAll()
-            .filter { it.needsRejection() }
-            .associateBy { it.email }
-        if (applicantsThatNeedRejection.isEmpty()) return emptyList()
-
-        return originalApplicants
-            .getAll()
-            .asSequence()
-            .filter { !it.hasBeenRejected() }
-            .filter { applicantsThatNeedRejection.containsKey(it.email) }
-            .map {
-                RejectableApplicant(
-                    it.id,
-                    job.id,
-                    it.name,
-                    it.preferredName,
-                    it.email
-                )
-            }
-            .toList()
-    }
-
 }
