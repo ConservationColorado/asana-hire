@@ -22,18 +22,23 @@ class SecurityConfiguration(
     @Bean
     internal fun securityWebFilterChain(http: ServerHttpSecurity): SecurityWebFilterChain {
         http
-            .authorizeExchange {
-                it
+            .authorizeExchange { authSpec ->
+                authSpec
                     .pathMatchers("/", "/login", "/error").permitAll()
                     .anyExchange().authenticated()
             }
-            .cors { it.configurationSource(corsConfiguration) }
-            .csrf {
-                it
+            .cors { corsSpec ->
+                corsSpec.configurationSource(corsConfiguration)
+            }
+            .csrf { csrfSpec ->
+                csrfSpec
                     .csrfTokenRepository(csrfTokenRepository)
                     .csrfTokenRequestHandler(csrfDelegate::handle)
             }
-            .oauth2Login { it.authenticationSuccessHandler(successHandler) }
+            .oauth2Login { oAuth2Spec ->
+                oAuth2Spec
+                    .authenticationSuccessHandler(successHandler)
+            }
         return http.build()
     }
 
