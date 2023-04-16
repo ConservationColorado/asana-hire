@@ -116,7 +116,7 @@ class SyncService(
     }
 
     private fun sendReceiptEmail(applicant: OriginalApplicant, jobTitle: String): Mono<Void> {
-        val recipient = GenericAddress(applicant.name, applicant.email)
+        val recipient = GenericAddress(applicant.preferredName, applicant.email)
         val message = mailService.createUpdateEmailBody(recipient, jobTitle)
         return mailService
             .createMessage(recipient, message)
