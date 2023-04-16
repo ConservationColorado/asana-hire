@@ -46,7 +46,7 @@ class ApplicantService(
             }
 
     private fun sendRejectionEmail(applicant: RejectableApplicant, jobTitle: String): Mono<Void> {
-        val recipient = GenericAddress(applicant.name, applicant.email)
+        val recipient = GenericAddress(applicant.preferredName, applicant.email)
         val message = mailService.createRejectionEmailBody(recipient, jobTitle)
         return mailService
             .createMessage(recipient, message)
