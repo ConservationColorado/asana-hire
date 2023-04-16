@@ -13,3 +13,4 @@ private fun String.toDisplayCase() =
         .joinToString(" ") { word ->
             word.lowercase().replaceFirstChar { it.uppercase() }
         }
+        .trim()
