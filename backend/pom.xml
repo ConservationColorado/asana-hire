@@ -102,7 +102,7 @@
         <dependency>
             <groupId>com.github.OliverAbdulrahim</groupId>
             <artifactId>kotlin-asana</artifactId>
-            <version>39de515f38</version>
+            <version>df84ec3a68</version>
         </dependency>
     </dependencies>
 
