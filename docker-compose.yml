@@ -1,4 +1,5 @@
-version: '3'
+version: "3.9"
+
 services:
   backend:
     image: "asana-hire/backend:0.0.1"
