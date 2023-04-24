@@ -11,12 +11,12 @@ class DomainConfiguration {
 
     @Bean
     fun jobSource() = JobSource().apply {
-        applicationPortfolio = Portfolio().apply { gid = env("application_portfolio_gid") }
-        interviewPortfolio = Portfolio().apply { gid = env("interview_portfolio_gid") }
+        applicationPortfolio = Portfolio().apply { gid = env("ASANA_APPLICATION_PORTFOLIO_GID") }
+        interviewPortfolio = Portfolio().apply { gid = env("ASANA_INTERVIEW_PORTFOLIO_GID") }
     }
 
     @Bean
-    fun workspace() = Workspace().apply { gid = env("workspace_gid") }
+    fun workspace() = Workspace().apply { gid = env("ASANA_WORKSPACE_GID") }
 
 }
 

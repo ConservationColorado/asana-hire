@@ -10,8 +10,8 @@ spring:
         registration:
           google:
             redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
-            client-id: ${google_client_id}
-            client-secret: ${google_client_secret}
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
             authorization-grant-type: authorization_code
             scope:
               - openid
