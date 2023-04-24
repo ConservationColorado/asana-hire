@@ -18,10 +18,17 @@ few simple Java classes I wrote to copy data from one place to another, run anal
 we've adopted the tool at our organization, the application has necessarily grown from a set of command line tools to a
 full stack site.
 
-This application has administrator, hiring manager, and applicant users, with hundreds interacting in any given month.
-Since anyone can apply to any open position at any time, and since hiring managers can review applications
-asynchronously, the availability requirement is high. This is a major reason why the application is built upon a 
-platform with good reliability (Asana).
+This application has administrator, hiring manager, and applicant users, with hundreds of monthly users. Since anyone
+can apply to any open position at any time, and since hiring managers can review applications asynchronously, the
+availability requirement is high. To achieve this availability, the application uses Asana as a data store.
+
+Asana is not perfect for this use case. The graph model used under the hood there is slow to retrieve large amounts of
+distributed information. This introduces latency to this application. However, Asana gives us a good balance of
+usability of our staff. It also comes at no additional cost; we already use the tool, while would have to pay for a
+managed database service. Also, we can easily export and report on data within Asana.
+
+In short, Asana gives high availability and non-techie user-friendliness in exchange for additional latency when this
+application is used manually. This is a worthwhile tradeoff for our use case!
 
 ### What it can do
 
@@ -32,12 +39,6 @@ platform with good reliability (Asana).
 - Secure all this data with organization-bound Google OIDC and OAuth2 user authentication and authorization
 - [Run or deploy the application easily using Docker and Docker Compose](#run-or-deploy-the-application-with-docker-compose)
 - [Separate your deployments with environment variables](#environment-variables)
-
-### Planned features
-
-- One click creation of jobs materials, including Asana projects
-- Admin console within the application
-- A fork of this repository that is standalone, independent of Asana
 
 # Getting started
 
@@ -99,7 +100,7 @@ SPRING_PROFILES_ACTIVE=             # optional: a 'dev' profile is provided in t
 Store these in an `.env` file that you keep outside your repository. I've provided an [example.env](example.env) file
 that you can use as a starter.
 
-Create separate `.env` files for your production and development environments.
+Create two different `.env` files to separate your production and development environments.
 
 Alternatively, you can avoid using an `env` file altogether by passing each variable individually into your Docker
 Compose command.
