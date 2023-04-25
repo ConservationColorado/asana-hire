@@ -31,5 +31,6 @@ services:
     environment:
       - REACT_APP_API_SERVER_URL
       - REACT_APP_CLIENT_URL
+      - REACT_APP_ENVIRONMENT
     ports:
       - "127.0.0.1:80:80"
