@@ -20,12 +20,12 @@ full stack site.
 
 This application has administrator, hiring manager, and applicant users, with hundreds of monthly users. Since anyone
 can apply to any open position at any time, and since hiring managers can review applications asynchronously, the
-availability requirement is high. To achieve this availability, the application uses Asana as a data store.
+availability requirement is high. To achieve this, the application uses Asana as a data store.
 
 Asana is not perfect for this use case. The graph model used under the hood there is slow to retrieve large amounts of
-distributed information. This introduces latency to this application. However, Asana gives us a good balance of
-usability of our staff. It also comes at no additional cost; we already use the tool, while would have to pay for a
-managed database service. Also, we can easily export and report on data within Asana.
+distributed information. This introduces latency to this application. However, Asana has good usability for our staff.
+It also comes at no additional cost; we already use the tool, while would have to pay for a managed database service.
+Also, we can easily export and report on data within Asana.
 
 In short, Asana gives high availability and non-techie user-friendliness in exchange for additional latency when this
 application is used manually. This is a worthwhile tradeoff for our use case!
@@ -97,10 +97,5 @@ DB_PASSWORD=                        # optional: your SQL database password
 SPRING_PROFILES_ACTIVE=             # optional: a 'dev' profile is provided in this project
 ```
 
-Store these in an `.env` file that you keep outside your repository. I've provided an [example.env](example.env) file
-that you can use as a starter.
-
-Create two different `.env` files to separate your production and development environments.
-
-Alternatively, you can avoid using an `env` file altogether by passing each variable individually into your Docker
-Compose command.
+Store these in an `.env` file that you keep outside your repository. You'll want to create different `.env` files to
+separate your environments, for example development and production.
