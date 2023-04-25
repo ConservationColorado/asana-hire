@@ -1,20 +1,26 @@
 FROM node:17-alpine3.12 AS builder
 
 WORKDIR /app
+
+COPY package.json package.json
+COPY package-lock.json package-lock.json
+
+ARG REACT_APP_API_SERVER_URL
+ENV REACT_APP_API_SERVER_URL=${REACT_APP_API_SERVER_URL}
+
+RUN npm ci --silent --production
+
 COPY . .
-RUN npm install && npm run build
 
-FROM nginx:1.21.0 as production
+RUN npm run build
 
-ENV NODE_ENV=${REACT_APP_ENVIRONMENT}
-ENV JSFOLDER=/usr/share/nginx/html/static/js/*.js
+FROM nginx:1.21.0-alpine AS production
 
-COPY ./nginx/default.conf /etc/nginx/conf.d/default.conf
-COPY ./scripts/docker-start-nginx.sh /usr/bin/docker-start-nginx.sh
+RUN apk update
 
-EXPOSE 80
+COPY /nginx/default.conf /etc/nginx/conf.d/default.conf
+COPY --from=builder /app/build /usr/share/nginx/html
 
-RUN chmod +x /usr/bin/docker-start-nginx.sh
-WORKDIR /usr/share/nginx/html
-COPY --from=builder /app/build .
-ENTRYPOINT [ "docker-start-nginx.sh" ]
+EXPOSE 3000
+
+CMD ["nginx", "-g", "daemon off;"]
