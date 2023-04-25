@@ -1,6 +1,7 @@
 import React from 'react';
 import {Card} from "flowbite-react";
 import GoogleLoginButton from "../components/oauth/GoogleLoginButton"
+import {API_URL} from "../config/constants"
 
 function LoginPage() {
     return (

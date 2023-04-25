@@ -1,22 +1,36 @@
-version: '3'
+version: "3.9"
+
 services:
   backend:
+    build:
+      context: backend
+      dockerfile: Dockerfile
     image: "asana-hire/backend:0.0.1"
     container_name: asana-hire-backend
-    build:
-      dockerfile: backend/Dockerfile
+    environment:
+      - ASANA_ACCESS_TOKEN
+      - ASANA_APPLICATION_PORTFOLIO_GID
+      - ASANA_INTERVIEW_PORTFOLIO_GID
+      - ASANA_WORKSPACE_GID
+      - DB_PASSWORD
+      - DB_URL
+      - DB_USERNAME
+      - GOOGLE_CLIENT_ID
+      - GOOGLE_CLIENT_SECRET
+      - REACT_APP_API_SERVER_URL
+      - REACT_APP_CLIENT_URL
+      - SPRING_PROFILES_ACTIVE
     ports:
       - "127.0.0.1:8080:8080"
-    environment:
-      - asana_access_token
-      - project_job_source_gid
-      - workspace_gid
-      - email_username
-      - email_password
   frontend:
+    build:
+      context: frontend
+      dockerfile: Dockerfile
+      args:
+        - REACT_APP_API_SERVER_URL=${REACT_APP_API_SERVER_URL}
     image: "asana-hire/frontend:0.0.1"
     container_name: asana-hire-frontend
-    build:
-      dockerfile: frontend/Dockerfile
+    environment:
+      - REACT_APP_API_SERVER_URL
     ports:
-      - "127.0.0.1:80:80"
+      - "127.0.0.1:3000:3000"
