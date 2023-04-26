@@ -1,6 +1,7 @@
 <div align="center">
 
-![Build status](https://github.com/oliverabdulrahim/asana-hire-test/actions/workflows/maven-build-test-and-report.yml/badge.svg)
+![Server build status](https://github.com/oliverabdulrahim/asana-hire-test/actions/workflows/maven-build-test-and-report.yml/badge.svg)
+![Client build status](https://github.com/oliverabdulrahim/asana-hire-test/actions/workflows/node-build-test.yml/badge.svg)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-success.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
 </div>
