@@ -1,7 +1,7 @@
 # Build and test this project with Maven, caching dependencies to improve the workflow execution time
 # Also generate and upload a test report
 
-name: CI Build and Test
+name: Server CI (Maven)
 
 # Run when main is updated. Also allow to run from Actions tab
 on:
