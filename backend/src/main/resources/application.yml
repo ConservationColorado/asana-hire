@@ -3,7 +3,6 @@ spring:
     url: ${DB_URL}
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
-    initialization-mode: always
   security:
     oauth2:
       client:
@@ -18,3 +17,6 @@ spring:
               - profile
               - email
               - "https://www.googleapis.com/auth/gmail.modify"
+
+client-base-url: ${REACT_APP_CLIENT_URL}
+server-base-url: ${REACT_APP_API_SERVER_URL}

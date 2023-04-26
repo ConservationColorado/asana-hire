@@ -10,7 +10,7 @@ import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource
 @Configuration
 class CorsConfiguration {
 
-    @Value("\${REACT_APP_CLIENT_URL}")
+    @Value("\${client-base-url}")
     private lateinit var clientUrl: String
 
     @Bean
