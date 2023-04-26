@@ -1,16 +1,16 @@
 spring:
   r2dbc:
-    url: ${DB_URL}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+    url: r2dbc:h2:mem:///testdb?options=DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    username: user
+    password: password
   security:
     oauth2:
       client:
         registration:
           google:
             redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
-            client-id: ${GOOGLE_CLIENT_ID}
-            client-secret: ${GOOGLE_CLIENT_SECRET}
+            client-id: "no-op"
+            client-secret: "no-op"
             authorization-grant-type: authorization_code
             scope:
               - openid
@@ -18,5 +18,5 @@ spring:
               - email
               - "https://www.googleapis.com/auth/gmail.modify"
 
-client-base-url: ${REACT_APP_CLIENT_URL}
-server-base-url: ${REACT_APP_API_SERVER_URL}
+client-base-url: "http://localhost:3000"
+server-base-url: "http://localhost:8080"
