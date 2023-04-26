@@ -27,7 +27,7 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
           cache: maven
-          
+
       # Build project with Maven
       - name: Install with Maven
         working-directory: backend
@@ -44,7 +44,7 @@ jobs:
         # Run even if the previous step failed
         if: always()
         with:
-          name: kotlin-asana test report
+          name: asana-hire Test Report
           working-directory: backend
           path: target/surefire-reports/*.xml
           reporter: java-junit
