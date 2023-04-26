@@ -16,7 +16,7 @@ class OAuth2LoginSuccessHandler(
     private val userService: UserService,
 ) : ServerAuthenticationSuccessHandler {
 
-    @Value("\${REACT_APP_CLIENT_URL}")
+    @Value("\${client-base-url}")
     private lateinit var redirectUrl: String
 
     override fun onAuthenticationSuccess(
