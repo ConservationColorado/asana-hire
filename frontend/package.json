@@ -4,7 +4,6 @@
   "private": true,
   "dependencies": {
     "@heroicons/react": "^2.0.13",
-    "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
     "flowbite": "^1.5.4",
@@ -19,7 +18,7 @@
   "scripts": {
     "start": "env-cmd -f $REACT_APP_ENV_FILE react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
+    "test": "react-scripts test --transformIgnorePatterns 'node_modules/(?!())/'",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -41,6 +40,8 @@
     ]
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^5.16.5",
+    "@testing-library/react-hooks": "^8.0.1",
     "autoprefixer": "^10.4.13",
     "env-cmd": "^10.1.0",
     "postcss": "^8.4.19",
