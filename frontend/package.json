@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@heroicons/react": "^2.0.13",
+    "@heroicons/react": "^2.0.17",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
     "flowbite": "^1.5.4",
@@ -41,7 +41,6 @@
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^5.16.5",
-    "@testing-library/react-hooks": "^8.0.1",
     "autoprefixer": "^10.4.13",
     "env-cmd": "^10.1.0",
     "postcss": "^8.4.19",
