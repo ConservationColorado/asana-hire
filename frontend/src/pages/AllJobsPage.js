@@ -25,4 +25,4 @@ function AllJobsPage(props) {
     }
 }
 
-export default AllJobsPage
+export default AllJobsPage;

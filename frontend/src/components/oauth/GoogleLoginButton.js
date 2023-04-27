@@ -11,7 +11,7 @@ function GoogleLoginButton() {
     }
 
     return (
-        <Button pill={true} onClick={handleClick}>
+        <Button data-testid="google-login-button" pill={true} onClick={handleClick}>
             🔐 Continue with Google
         </Button>
     );
