@@ -1,6 +1,6 @@
 import {Link} from 'react-router-dom';
 import {useEffect, useState} from "react";
-import {getApiPromise, plainSpinner} from '../../utils/PageUtils';
+import {getApiPromise, putApiPromise, plainSpinner} from '../../utils/PageUtils';
 import RejectableApplicant from './RejectableApplicant';
 import {Button, Table} from 'flowbite-react';
 
@@ -105,12 +105,7 @@ function RejectableApplicantList({job, close, closeAndConfirm}) {
     }
 
     function rejectAll(applicants) {
-        const options = {
-            method: 'PUT',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(applicants)
-        };
-        fetch(`http://localhost:8080/applicants/reject-all`, options)
+        putApiPromise('/applicants/reject-all')
         closeAndConfirm();
     }
 
