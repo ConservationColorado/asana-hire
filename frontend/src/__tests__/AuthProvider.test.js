@@ -61,7 +61,7 @@ describe("AuthProvider", () => {
             loginButton.click();
         });
         expect(window.location.replace).toHaveBeenCalledWith(
-            "undefined/oauth2/authorization/google"
+            "http://127.0.0.1:8080/oauth2/authorization/google"
         );
 
         // Click the logout button and verify the window.location.replace method was called
