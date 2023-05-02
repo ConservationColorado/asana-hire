@@ -3,10 +3,9 @@
 
 name: Server CI (Maven)
 
-# Run when main is updated. Also allow to run from Actions tab
+# Run automatically on pull requests to main
+# Run manually from the Actions tab
 on:
-  push:
-    branches: 'main'
   pull_request:
     branches: 'main'
   workflow_dispatch:
