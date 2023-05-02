@@ -17,8 +17,8 @@ services:
       - DB_USERNAME
       - GOOGLE_CLIENT_ID
       - GOOGLE_CLIENT_SECRET
-      - REACT_APP_API_SERVER_URL
-      - REACT_APP_CLIENT_URL
+      - SERVER_BASE_URL
+      - CLIENT_BASE_URL
       - SPRING_PROFILES_ACTIVE
     ports:
       - "127.0.0.1:8080:8080"
@@ -26,11 +26,7 @@ services:
     build:
       context: frontend
       dockerfile: Dockerfile
-      args:
-        - REACT_APP_API_SERVER_URL=${REACT_APP_API_SERVER_URL}
     image: "asana-hire/frontend:0.0.1"
     container_name: asana-hire-frontend
-    environment:
-      - REACT_APP_API_SERVER_URL
     ports:
       - "127.0.0.1:3000:3000"

@@ -18,5 +18,5 @@ spring:
               - email
               - "https://www.googleapis.com/auth/gmail.modify"
 
-client-base-url: ${REACT_APP_CLIENT_URL}
-server-base-url: ${REACT_APP_API_SERVER_URL}
+client-base-url: ${CLIENT_BASE_URL}
+server-base-url: ${SERVER_BASE_URL}
