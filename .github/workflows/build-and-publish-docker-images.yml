@@ -1,0 +1,25 @@
+name: Docker Images @ GHCR
+
+# Only run this workflow manually from the Actions tab
+on:
+  workflow_dispatch:
+
+jobs:
+  build-and-publish-docker-images:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2.5.0
+
+    - name: Build and publish asana-hire-frontend Docker image
+      uses: VaultVulp/gp-docker-action@1.6.0
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        image-name: asana-hire-frontend
+        build-context: ./frontend
+    - name: Build and publish asana-hire-backend Docker image
+      uses: VaultVulp/gp-docker-action@1.6.0
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        image-name: asana-hire-backend
+        build-context: ./backend

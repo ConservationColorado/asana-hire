@@ -1,5 +1,4 @@
-# Build and test this project's front end with Maven, caching dependencies to improve workflow 
-# execution time. Also generate and upload a test report
+# Build and test this project's front end with npm
 
 name: Client CI (Node.js)
 
@@ -7,11 +6,11 @@ defaults:
   run:
     working-directory: frontend
 
+# Run automatically on pull requests to main
+# Run manually from the Actions tab
 on:
-  push:
-    branches: [ "main" ]
   pull_request:
-    branches: [ "main" ]
+    branches: 'main'
   workflow_dispatch:
 
 jobs:
