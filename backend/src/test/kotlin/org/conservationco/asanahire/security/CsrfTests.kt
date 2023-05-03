@@ -34,6 +34,7 @@ internal class CsrfTests(
             .uri("/logout")
             .exchange()
             .expectStatus().isForbidden
+            .expectBodyContainsCsrfErrorMessage()
     }
 
     @Test
@@ -62,6 +63,12 @@ internal class CsrfTests(
             .uri("/webhook/delete")
             .exchange()
             .expectStatus().isForbidden
+            .expectBodyContainsCsrfErrorMessage()
     }
+
+    private fun WebTestClient.ResponseSpec.bodyToString() = expectBody(String::class.java)
+
+    private fun WebTestClient.ResponseSpec.expectBodyContainsCsrfErrorMessage() =
+        bodyToString().isEqualTo("An expected CSRF token cannot be found")
 
 }
