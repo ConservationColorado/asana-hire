@@ -8,6 +8,7 @@ import org.springframework.security.web.server.SecurityWebFilterChain
 import org.springframework.security.web.server.authentication.ServerAuthenticationSuccessHandler
 import org.springframework.security.web.server.csrf.ServerCsrfTokenRepository
 import org.springframework.security.web.server.csrf.ServerCsrfTokenRequestHandler
+import org.springframework.security.web.server.util.matcher.ServerWebExchangeMatcher
 import org.springframework.web.cors.reactive.CorsConfigurationSource
 
 @Configuration
@@ -17,6 +18,7 @@ class SecurityConfiguration(
     private val csrfTokenRepository: ServerCsrfTokenRepository,
     private val corsConfiguration: CorsConfigurationSource,
     private val csrfDelegate: ServerCsrfTokenRequestHandler,
+    private val csrfMatcher: ServerWebExchangeMatcher,
 ) {
 
     @Bean
@@ -24,7 +26,7 @@ class SecurityConfiguration(
         http
             .authorizeExchange { authSpec ->
                 authSpec
-                    .pathMatchers("/", "/login", "/error").permitAll()
+                    .pathMatchers(*publicPatterns).permitAll()
                     .anyExchange().authenticated()
             }
             .cors { corsSpec ->
@@ -34,6 +36,7 @@ class SecurityConfiguration(
                 csrfSpec
                     .csrfTokenRepository(csrfTokenRepository)
                     .csrfTokenRequestHandler(csrfDelegate::handle)
+                    .requireCsrfProtectionMatcher(csrfMatcher)
             }
             .oauth2Login { oAuth2Spec ->
                 oAuth2Spec
