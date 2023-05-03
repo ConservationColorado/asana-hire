@@ -64,11 +64,11 @@ private fun combinePortfolios(
 
     val jobs = (applicationProjects.keys.asSequence() + interviewProjects.keys)
         .associateWith {
-            Job().apply {
-                title = it
-                applicationProjectId = applicationProjects[it].orEmpty()
-                interviewProjectId = interviewProjects[it].orEmpty()
-            }
+            Job(
+                title = it,
+                applicationProjectId = applicationProjects[it].orEmpty(),
+                interviewProjectId = interviewProjects[it].orEmpty(),
+            )
         }.values
 
     return Mono.just(jobs)
