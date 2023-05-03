@@ -36,4 +36,32 @@ internal class CsrfTests(
             .expectStatus().isForbidden
     }
 
+    @Test
+    internal fun `should allow POST request to webhook create endpoint with valid CSRF`() {
+        client
+            .mutateWith(SecurityMockServerConfigurers.csrf())
+            .post()
+            .uri("/webhook/create")
+            .exchange()
+            .expectStatus().is2xxSuccessful
+    }
+
+    @Test
+    internal fun `should allow POST request to webhook create endpoint without valid CSRF`() {
+        client
+            .post()
+            .uri("/webhook/create")
+            .exchange()
+            .expectStatus().is2xxSuccessful
+    }
+
+    @Test
+    internal fun `should deny DELETE request to webhook delete endpoint without valid CSRF`() {
+        client
+            .delete()
+            .uri("/webhook/delete")
+            .exchange()
+            .expectStatus().isForbidden
+    }
+
 }
