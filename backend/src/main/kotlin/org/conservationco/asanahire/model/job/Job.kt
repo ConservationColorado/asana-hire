@@ -1,6 +1,5 @@
 package org.conservationco.asanahire.model.job
 
-import org.conservationco.asana.serialization.AsanaSerializable
 import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Table
 
@@ -12,4 +11,4 @@ data class Job(
     val applicationProjectId: String = "",
     val interviewProjectId: String = "",
     val isAutoSyncing: Boolean = false,
-) : AsanaSerializable<Job>
+)
