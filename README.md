@@ -19,6 +19,15 @@ your hiring process, and automates your administrative work. Read on to learn mo
   <p>Here's a quick demo of the application, including pages for individual jobs.</p>
 </div>
 
+## Table of contents
+
+1. [Background and motivation](#background-and-motivation)
+2. [What this application can do](#what-this-application-can-do)
+3. [Getting started](#getting-started)
+    1. [Environment variables](#environment-variables)
+    2. [Running locally with Docker Compose](#running-locally-with-docker-compose)
+    3. [Deploying to the cloud](#deploying-to-the-cloud)
+
 ### Background and motivation
 
 I first started developing this application to do my job more efficiently at my organization. The tool started out as a
