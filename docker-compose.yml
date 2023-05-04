@@ -5,8 +5,7 @@ services:
     build:
       context: backend
       dockerfile: Dockerfile
-    image: "asana-hire/backend:0.0.1"
-    container_name: asana-hire-backend
+    image: ghcr.io/conservationcolorado/asana-hire/asana-hire-backend:latest
     environment:
       - ASANA_ACCESS_TOKEN
       - ASANA_APPLICATION_PORTFOLIO_GID
@@ -26,7 +25,6 @@ services:
     build:
       context: frontend
       dockerfile: Dockerfile
-    image: "asana-hire/frontend:0.0.1"
-    container_name: asana-hire-frontend
+    image: ghcr.io/conservationcolorado/asana-hire/asana-hire-frontend:latest
     ports:
       - "127.0.0.1:3000:3000"
