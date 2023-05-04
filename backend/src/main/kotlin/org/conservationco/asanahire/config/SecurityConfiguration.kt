@@ -30,7 +30,8 @@ class SecurityConfiguration(
                     .anyExchange().authenticated()
             }
             .cors { corsSpec ->
-                corsSpec.configurationSource(corsConfiguration)
+                corsSpec
+                    .configurationSource(corsConfiguration)
             }
             .csrf { csrfSpec ->
                 csrfSpec
