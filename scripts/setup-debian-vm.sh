@@ -80,7 +80,7 @@ if ! nginx -t; then
 fi
 systemctl reload nginx
 
-# Currently, this VM is accessible on the internet! But over HTTP only.
+# Currently, this VM is accessible on the internet, but over HTTP only!
 # We need to generate and install an SSL certificate to use HTTPS.
 # We'll use Let's Encrypt's certbot, which is auto-renewing
 # From https://stackoverflow.com/a/70387205
@@ -89,3 +89,4 @@ certbot --nginx -d "$hostname" || {
   echo "Error: Certbot failed to generate an SSL certificate." >&2
   exit 1
 }
+systemctl reload nginx
