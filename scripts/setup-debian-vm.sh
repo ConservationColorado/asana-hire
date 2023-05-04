@@ -5,7 +5,7 @@
 # Sets up Docker, Nginx, and SSL
 
 # Redirect stdout and stderr to a log file
-exec &>>/var/log/script.log
+exec &>>/var/log/setup-debian-vm.log
 
 if [ "$EUID" -ne 0 ]; then
   echo "You can only run this script as a super user. Please rerun with sudo."
@@ -57,6 +57,15 @@ server {
 
     location / {
         proxy_pass http://localhost:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+
+    location /api {
+        proxy_pass http://localhost:8080;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection 'upgrade';
