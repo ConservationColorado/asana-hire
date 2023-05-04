@@ -77,8 +77,8 @@ GOOGLE_CLIENT_ID=                   # required: your Google client ID, with the 
 GOOGLE_CLIENT_SECRET=               # required: your Google client secret
 
 # Base URL configuration
-REACT_APP_CLIENT_URL=               # required: default is http://localhost:3000
-REACT_APP_API_SERVER_URL=           # required: default is http://localhost:8080
+CLIENT_BASE_URL=                    # required: default is <your protocol>://<your base url>:3000
+SERVER_BASE_URL=                    # required: default is <your protocol>://<your base url>:8080
 
 # Database configuration
 DB_URL=                             # required: your SQL database url
