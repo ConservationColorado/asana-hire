@@ -1,6 +1,6 @@
 import {Spinner} from "flowbite-react";
 import Cookies from 'js-cookie';
-import {API_URL} from "../config/constants"
+import config from "../config.json"
 
 export function loadingSpinner() {
     return (
@@ -70,7 +70,7 @@ export function postApiPromise(resource) {
 }
 
 function fetchApi(resource, options) {
-    const uri = API_URL + resource;
+    const uri = config.SERVER_BASE_URL + resource;
     return fetch(uri, options)
 }
 

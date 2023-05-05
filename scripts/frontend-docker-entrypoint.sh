@@ -17,17 +17,12 @@
 # Adapted from https://developers.redhat.com/blog/2021/03/04/making-environment-variables-accessible-in-front-end-containers
 
 # Assumes *.js files from builder image are already in the nginx directory
-js_path='/usr/share/nginx/html/static/js'
-cp "$js_path"/*.js /tmp
+js_files='/usr/share/nginx/html/static/js/*.js'
 
-for file in /tmp/*.js; do
-  # Environment variables in Node.js always start with 'process.env', so replace that with '$'
-  # Run envsubst to substitute in the actual value of that variable
-  # For example, if REACT_APP_VAR=foo, then:
-  #   1. 'process.env.REACT_APP_VAR' becomes '$REACT_APP_VAR' (sed),
-  #   2. This becomes 'foo' (envsubst)
-  #   3. The result is written from the temp file to the final file
-  sed 's/process\.env\./\$/g' "$file" | envsubst > "$js_path/$(basename "$file")"
+formatted_envs=$(printenv | awk -F= '{print $1}' | sed 's/^/\$/g' | paste -sd,)
+
+for file in $js_files; do
+  envsubst "$formatted_envs" <"$file" | sponge "$file"
 done
 
 nginx -g 'daemon off;'

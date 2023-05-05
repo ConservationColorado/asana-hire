@@ -2,6 +2,7 @@ import '@testing-library/jest-dom';
 import React from "react";
 import {render, act} from "@testing-library/react";
 import AuthProvider, {AuthContext} from "../components/oauth/AuthProvider";
+import config from "../config.json"
 
 describe("AuthProvider", () => {
 
@@ -61,7 +62,7 @@ describe("AuthProvider", () => {
             loginButton.click();
         });
         expect(window.location.replace).toHaveBeenCalledWith(
-            "http://127.0.0.1:8080/oauth2/authorization/google"
+            config.SERVER_BASE_URL + "/oauth2/authorization/google"
         );
 
         // Click the logout button and verify the window.location.replace method was called
