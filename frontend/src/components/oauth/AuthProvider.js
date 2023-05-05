@@ -1,6 +1,6 @@
 import React, {createContext, useEffect, useState} from "react";
 import {getApiPromise, postApiPromise} from '../../utils/PageUtils'
-import {API_URL} from "../../config/constants"
+import config from "../../config.json"
 
 export const AuthContext = createContext();
 
@@ -26,7 +26,7 @@ function AuthProvider({children}) {
     }, []);
 
     function oauthLogin(provider) {
-        let uri = API_URL + '/oauth2/authorization/' + provider;
+        let uri = config.SERVER_BASE_URL + '/oauth2/authorization/' + provider;
         window.location.replace(uri);
     }
 
