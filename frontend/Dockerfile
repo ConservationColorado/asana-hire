@@ -1,6 +1,6 @@
 FROM node:17-alpine3.12 AS builder
 
-COPY ../scripts/process-config-json.sh /usr/bin/process-config-json.sh
+COPY scripts/process-config-json.sh /usr/bin/process-config-json.sh
 RUN chmod +x /usr/bin/process-config-json.sh
 
 RUN apk --no-cache add \
@@ -9,12 +9,12 @@ RUN apk --no-cache add \
 
 WORKDIR /app
 
-COPY frontend/package.json package.json
-COPY frontend/package-lock.json package-lock.json
+COPY package.json package.json
+COPY package-lock.json package-lock.json
 
 RUN npm ci --silent --production
 
-COPY frontend/ .
+COPY . .
 
 # Prepares config.json for environment variable injection
 RUN process-config-json.sh src/config.json
@@ -26,7 +26,7 @@ FROM nginx:1.21.0-alpine AS production
 ENV SERVER_BASE_URL=${SERVER_BASE_URL}
 ENV CLIENT_BASE_URL=${CLIENT_BASE_URL}
 
-COPY frontend/nginx/default.conf /etc/nginx/conf.d/default.conf
+COPY nginx/default.conf /etc/nginx/conf.d/default.conf
 COPY --from=builder /app/build /usr/share/nginx/html
 
 RUN apk --no-cache add \
@@ -34,7 +34,7 @@ RUN apk --no-cache add \
     moreutils
 
 # Injects this instance's environment variables to config.json
-COPY ../scripts/frontend-docker-entrypoint.sh /usr/bin/frontend-docker-entrypoint.sh
+COPY scripts/frontend-docker-entrypoint.sh /usr/bin/frontend-docker-entrypoint.sh
 RUN chmod +x /usr/bin/frontend-docker-entrypoint.sh
 
 EXPOSE 3000
