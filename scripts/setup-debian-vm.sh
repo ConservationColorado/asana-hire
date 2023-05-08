@@ -50,43 +50,47 @@ fi
 apt-get install nginx
 
 # Let's Encrypt's certbot will generate more configuration when we run it in a bit
-cat >/etc/nginx/sites-available/default <<'EOF'
+# This base configuration is enough to tell certbot what we need to set up
+cat >/etc/nginx/sites-available/default <<EOF
+
+# Frontend configuration
 server {
-    listen 80 default_server;
-    listen [::]:80 default_server;
+
+    listen 80;
+    server_name  $hostname;
 
     location / {
         proxy_pass http://localhost:3000;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection 'upgrade';
-        proxy_set_header Host $host;
-        proxy_cache_bypass $http_upgrade;
     }
 
-    location /api {
-        proxy_pass http://localhost:8080;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection 'upgrade';
-        proxy_set_header Host $host;
-        proxy_cache_bypass $http_upgrade;
-    }
 }
+
+# Backend configuration
+server {
+
+    listen 80;
+    server_name  api.$hostname;
+
+    location / {
+        proxy_pass http://localhost:8080;
+    }
+
+}}
+
 EOF
 if ! nginx -t; then
   echo "Error: Nginx configuration is invalid." >&2
   exit 1
 fi
-systemctl reload nginx
 
 # Currently, this VM is accessible on the internet, but over HTTP only!
 # We need to generate and install an SSL certificate to use HTTPS.
 # We'll use Let's Encrypt's certbot, which is auto-renewing
 # From https://stackoverflow.com/a/70387205
 apt install certbot python3-certbot-nginx
-certbot --nginx -d "$hostname" || {
-  echo "Error: Certbot failed to generate an SSL certificate." >&2
+certbot --nginx -d "$hostname" && certbot --nginx -d "api.$hostname" || {
+  echo "Error: Certbot failed to generate an SSL certificate" >&2
+  echo "Check to make sure you have a DNS A record set up with Name=$hostname Value=$static_ip_address" >&2
   exit 1
 }
 systemctl reload nginx
