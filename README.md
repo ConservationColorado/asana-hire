@@ -94,8 +94,18 @@ separate your environments, for example development and production.
 
 ### Running locally with Docker Compose
 
+These steps are useful for running the application locally, for example in development.
+
+<details>
+<summary>Show prerequisites to run locally</summary>
+
+- An internet connection during initial setup
+- [Docker](https://docs.docker.com/get-docker/) CLI or GUI
+
+</details>
+
 <details> 
-<summary>Show steps to run the application locally</summary>
+<summary>Show steps to run locally</summary>
 
 #### Get a copy of this repository
 
@@ -106,7 +116,7 @@ terminal, if you have it installed:
 git clone https://github.com/ConservationColorado/asana-hire.git
 ```
 
-You can also use the `wget` command:
+You can also use `wget`:
 
 ```shell
 wget -Q https://github.com/ConservationColorado/asana-hire/archive/refs/heads/main.zip && unzip -q main.zip
@@ -116,54 +126,74 @@ Alternatively, you can
 [download a `.zip` file containing of the main branch at this link](https://github.com/ConservationColorado/asana-hire/archive/refs/heads/main.zip),
 then extract the contents.
 
-#### Start the application with [Docker Compose](https://docs.docker.com/compose/)
+#### Start the application with Docker Compose
 
-Enter the directory where you copied this repository and run the following `docker compose` command in your terminal:
+Enter the directory where you copied this repository and run the following `docker` command in your terminal:
 
 ```shell
-docker compose --env-file <your env file> up
+docker compose --env-file <path to your env file> up
 ```
 
 You may optionally include the `-d` flag to start the containers in detached mode (run in the background of your
 terminal).
 
-As an alternative to the command line, [Docker Desktop](https://docs.docker.com/compose/install/) has a user interface
+As an alternative to the command line, [Docker Desktop](https://docs.docker.com/get-docker/) has a user interface
 you can use to run the application.
 
 </details>
 
 ### Deploying to the cloud
 
+I've provided [a Shell script to get a Debian-based virtual machine set up](scripts/setup-debian-vm.sh) with everything
+you need.
+
+Before you run it, you will need to acquire:
+<details>
+<summary>Show prerequisites to deploy to the cloud</summary>
+
+- A virtual machine instance, for example, those provided
+  by [Google Cloud Compute Engine](https://cloud.google.com/compute),
+  [Amazon Elastic Compute Cloud (EC2)](https://aws.amazon.com/ec2/),
+  or [Azure Virtual Machines](https://azure.microsoft.com/en-us/products/virtual-machines/)
+- Root privileges on that instance
+- A static IP address assigned to that virtual machine instance (not an ephemeral address)
+- A hostname that you own, set up with the DNS records I've included below:
+
+```
+Type    Name              Value                            TTL
+A       api.asana-hire    <your VM's static IP address>    <any value>
+A       asana-hire        <your VM's static IP address>    <any value>
+```
+
+</details>
+
 <details>
 <summary>Show steps to deploy the application to your favorite cloud provider</summary>
 
 #### Get a copy of this repository
 
-Your virtual machine likely has `git` installed. Clone this repository:
+First, clone this repository:
 
 ```shell
 git clone https://github.com/ConservationColorado/asana-hire.git
 ```
 
-I've provided [a Shell script to get a Debian-based virtual machine set up](scripts/setup-debian-vm.sh) with everything
-you need.
+#### DNS and network setup
 
-**⚠️ Note!** Running this script _will_ expose your virtual machine to the internet! Please understand this before
-continuing.
+You can change `Name` to whatever you like as long as you update your environment variables to match.
 
-This installs and configures:
+Check your domain provider's documentation for more details on editing your DNS records.
 
-- Docker and Docker Compose
-- Nginx as a reverse proxy
-- An auto-renewing SSL certificate (through [Let's Encrypt](https://letsencrypt.org/))
+Finally, you may still need to configure your virtual machine's firewall. Check your cloud provider's documentation for
+more details.
 
-To run it, you will need:
+#### Run the script
 
-- Root privileges on your virtual machine instance
-- A static IP address assigned to that virtual machine instance
-- A hostname that you own
+**⚠️ Note!** Running this script _will_ expose your virtual machine's port 80 to the internet! Please understand the
+implications of this before continuing.
 
-After running, you may still need to configure your virtual machine's firewall. Check your cloud provider's
-documentation for more details. You will also need a DNS A record to point your VM's static IP address to the hostname
-you specify.
+```shell
+sudo asana-hire/scripts/setup-debian-vm.sh
+```
+
 </details>
