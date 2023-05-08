@@ -26,5 +26,8 @@ services:
       context: frontend
       dockerfile: Dockerfile
     image: ghcr.io/conservationcolorado/asana-hire/asana-hire-frontend:latest
+    environment:
+      - SERVER_BASE_URL
+      - CLIENT_BASE_URL
     ports:
       - "127.0.0.1:3000:3000"
