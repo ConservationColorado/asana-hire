@@ -39,10 +39,11 @@ export function getApiPromise(resource) {
     );
 }
 
-export function putApiPromise(resource) {
+export function putApiPromise(resource, body) {
     return fetchApi(
         resource,
         {
+            body: body,
             method: "PUT",
             credentials: 'include',
             headers: {
