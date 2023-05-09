@@ -1,5 +1,7 @@
 package org.conservationco.asanahire.config
 
+import org.conservationco.asanahire.util.extractHostnameFromUrl
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.web.server.csrf.CookieServerCsrfTokenRepository
@@ -14,9 +16,17 @@ import reactor.core.publisher.Mono
 @Configuration
 class CsrfConfiguration {
 
+    @Value("\${server-base-url}")
+    private lateinit var serverUrl: String
+
     @Bean
-    internal fun csrfTokenRepository() =
-        CookieServerCsrfTokenRepository.withHttpOnlyFalse()
+    internal fun csrfTokenRepository(): CookieServerCsrfTokenRepository {
+        val currentDomain = extractHostnameFromUrl(serverUrl)
+        val repository = CookieServerCsrfTokenRepository.withHttpOnlyFalse()
+        repository.setCookieName("XSRF-TOKEN")
+        repository.setCookieDomain(currentDomain)
+        return repository
+    }
 
     @Bean
     internal fun csrfDelegateHandleFunction() =
