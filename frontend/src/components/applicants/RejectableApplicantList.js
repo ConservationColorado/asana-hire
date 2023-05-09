@@ -10,6 +10,7 @@ function RejectableApplicantList({job, close, closeAndConfirm}) {
 
     useEffect(() => {
         getApiPromise(`/applicants/${job.id}/reject`)
+            .then((response) => response.json())
             .then((data) => {
                 setIsLoading(false)
                 setRejectableApplicants(data)
