@@ -106,7 +106,7 @@ function RejectableApplicantList({job, close, closeAndConfirm}) {
     }
 
     function rejectAll(applicants) {
-        putApiPromise('/applicants/reject-all')
+        putApiPromise('/applicants/reject-all', JSON.stringify(applicants))
         closeAndConfirm();
     }
 
