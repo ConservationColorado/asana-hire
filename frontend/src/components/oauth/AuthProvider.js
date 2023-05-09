@@ -31,8 +31,10 @@ function AuthProvider({children}) {
     }
 
     function logout() {
-        postApiPromise('/oauth2/logout');
-        destroySession();
+        postApiPromise('/oauth2/logout')
+            .then((data) => {
+                destroySession();
+            });
     }
 
     function loginSuccess(data) {
