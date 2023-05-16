@@ -1,13 +1,11 @@
 package org.conservationco.asanahire.service
 
 import org.conservationco.asanahire.config.webhookSecretHeader
+import org.conservationco.asanahire.util.isSignedBySecret
 import org.springframework.http.HttpHeaders
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
-import java.util.*
 import java.util.concurrent.ConcurrentHashMap
-import javax.crypto.Mac
-import javax.crypto.spec.SecretKeySpec
 
 @Service
 class WebhookService {
@@ -34,41 +32,33 @@ class WebhookService {
         body: String?
     ): ResponseEntity<String> = when {
         secret != null -> {
-            secrets.add(secret)
+            processSecret(secret)
             val responseHeaders = HttpHeaders()
             responseHeaders[webhookSecretHeader] = secret
             ResponseEntity.noContent().headers(responseHeaders).build()
         }
 
-        signature != null && isSignedByAnyKnownSecrets(signature, body) -> {
-            processEvents(body)
+        signature == null -> {
             ResponseEntity.noContent().build()
+        }
+
+        isSignedByAnyKnownSecrets(signature, body) -> {
+            if (!body.isNullOrEmpty()) processEvents(body)
+            ResponseEntity.ok().build()
         }
 
         else -> ResponseEntity.badRequest().build()
     }
 
-    private fun processEvents(body: String?) {
-        TODO("Not yet implemented")
+    private fun processSecret(secret: String) {
+        if (secret.isNotBlank() && secret.isNotEmpty()) secrets.add(secret)
+    }
+
+    private fun processEvents(body: String) {
+        // todo
     }
 
     private fun isSignedByAnyKnownSecrets(signature: String, body: String?) =
         secrets.any { isSignedBySecret(it, signature, body) }
 
-}
-
-/**
- * Returns true if [body] is signed with the given secret.
- */
-private fun isSignedBySecret(
-    secret: String, givenSignature: String, body: String?
-): Boolean {
-    val hmacSha256: Mac = Mac.getInstance("HmacSHA256")
-    val secretKey = SecretKeySpec(secret.toByteArray(), "HmacSHA256")
-    hmacSha256.init(secretKey)
-
-    val digest: ByteArray = hmacSha256.doFinal(body?.toByteArray())
-    val computedSignature: String = Base64.getEncoder().encodeToString(digest)
-
-    return computedSignature == givenSignature
 }
