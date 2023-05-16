@@ -31,7 +31,7 @@ class WebhookController(
         @RequestHeader(webhookSecretHeader) secret: String?,
         @RequestHeader(webhookSignatureHeader) signature: String?,
         @RequestBody body: String?
-    ) = Mono.just(webhookService.processWebhookRequest(secret, signature, body))
+    ) = Mono.just(webhookService.handleWebhookRequest(secret, signature, body))
 
     @PostMapping("/webhook/new")
     fun newWebhookRequest(@RequestBody job: Job): String = asanaContext { return "" }
