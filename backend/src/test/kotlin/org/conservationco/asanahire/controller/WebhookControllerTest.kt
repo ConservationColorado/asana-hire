@@ -10,7 +10,6 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.reactive.server.WebTestClient
 
-
 @SpringBootTest
 @ActiveProfiles("test")
 @AutoConfigureWebTestClient
@@ -62,11 +61,13 @@ internal class WebhookControllerTest(
             .post()
             .uri(asanaWebhookCreatePath)
             .header(webhookSignatureHeader, "54321")
-            .bodyValue("""
+            .bodyValue(
+                """
                 {
                     "foo": ["bar"]
                 }
-            """.trimIndent())
+            """.trimIndent()
+            )
             .exchange()
             .expectStatus().is4xxClientError
     }
@@ -82,6 +83,5 @@ internal class WebhookControllerTest(
             .expectStatus().isNoContent
             .expectHeader().valueMatches(webhookSecretHeader, "12345")
     }
-
 
 }
