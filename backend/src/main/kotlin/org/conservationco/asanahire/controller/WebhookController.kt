@@ -15,6 +15,17 @@ class WebhookController(
     private val webhookService: WebhookService,
 ) {
 
+    /**
+     * Webhook handshake initiation, heartbeat, and event receiving endpoint that returns the following:
+     *  - `204 No Content`    if [secret], [signature], and [body] are null or empty
+     *  - `204 No Content`    for valid secrets, with `X-Hook-Secret=`[secret]`
+     *  - `200 OK`            if [secret], [signature], and [body] align
+     *  - `400 Bad Request`   otherwise
+     *
+     *  @param secret the shared secret to establish
+     *  @param signature the HMAC SHA256 signature of the request body, derived from the shared secret
+     *  @param body the JSON `String` containing event data
+     */
     @PostMapping(asanaWebhookCreatePath)
     fun asanaWebhookEntrypoint(
         @RequestHeader(webhookSecretHeader) secret: String?,
