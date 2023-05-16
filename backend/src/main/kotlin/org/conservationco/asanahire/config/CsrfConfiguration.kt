@@ -59,7 +59,7 @@ internal val csrfIgnoredMethods = arrayOf(
 )
 
 internal val csrfDisabledPatterns = arrayOf(
-    webhookCreatePath
+    asanaWebhookCreatePath
 )
 
 internal fun isCsrfDisabledUrl(path: String) = doesPathMatch(path, csrfDisabledPatterns)

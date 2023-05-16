@@ -53,7 +53,7 @@ class CorsConfiguration {
     @Bean
     internal fun corsConfigurationSource() =
         UrlBasedCorsConfigurationSource().apply {
-            registerCorsConfiguration(webhookCreatePath, webhookCorsConfig)
+            registerCorsConfiguration(asanaWebhookCreatePath, webhookCorsConfig)
             registerCorsConfiguration("/**", globalCorsConfig)
         }
 

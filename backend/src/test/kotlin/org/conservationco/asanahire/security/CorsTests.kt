@@ -1,6 +1,6 @@
 package org.conservationco.asanahire.security
 
-import org.conservationco.asanahire.config.webhookCreatePath
+import org.conservationco.asanahire.config.asanaWebhookCreatePath
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -74,7 +74,7 @@ internal class CorsTests(
     internal fun `should allow POST requests from any origin at webhook create endpoint`() {
         client
             .method(HttpMethod.POST)
-            .uri("$serverUrl/$webhookCreatePath")
+            .uri("$serverUrl/$asanaWebhookCreatePath")
             .header(HttpHeaders.ORIGIN, "https://website.com")
             .exchange()
             .expectStatus().is2xxSuccessful
@@ -84,7 +84,7 @@ internal class CorsTests(
     internal fun `should allow X-Hook-Secret header at webhook create endpoint`() {
         client
             .method(HttpMethod.POST)
-            .uri("$serverUrl/$webhookCreatePath")
+            .uri("$serverUrl/$asanaWebhookCreatePath")
             .header("X-Hook-Secret", "12345")
             .exchange()
             .expectStatus().is2xxSuccessful
