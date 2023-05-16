@@ -44,7 +44,7 @@ class CorsConfiguration(
         }
         webhookCorsConfig.apply {
             allowedOrigins = listOf("*")
-            allowedMethods = listOf("POST")
+            allowedMethods = listOf("POST", "OPTIONS")
             allowedHeaders = listOf("X-Hook-Secret")
         }
     }
