@@ -16,15 +16,16 @@ import java.util.concurrent.ConcurrentHashMap
 class WebhookController {
 
     /**
-     * Stores `x-hook-secret`values.
+     * Stores `X-Hook-Secret` values given in the initial webhook handshake. These secrets are used to validate signed
+     * HMAC SHA256 signatures given in webhook events.
      */
     private val secrets = ConcurrentHashMap.newKeySet<String>()
 
     /**
      * Control flow
-     *        - if x-hook secret exists, then save it and return it (OPTIONALLY, map the secret to the resource its created on)
+     *        - if x-hook secret exists, then save it and return it
      *        - if it does not exist, check if the x-hook-signature exists
-     *           - if it does not exist, retrieve
+     *           - if it does not exist, return 400
      *           - if it does exist, validate the body of the request against the x-hook-secret and compare to given
      *             x-hook-signature, which is an HMAC SHA256 signature
      *                - if it matches, process the data
@@ -34,14 +35,13 @@ class WebhookController {
      *   - catch a bad request to delete and recreate webhooks
      *   - iterate over x-hook-secrets to find a match
      */
-    // todo remap to /asana
-    // todo rename to asanaWebhookEntrypoint
+    // todo move logic to a service layer
     // todo store secret
-    // todo check to see if secret exists
+    // todo if the secret exists, iterate over existing secrets
     // todo handle events
     // todo validate if events match the source expected from the stored secret
     @PostMapping(asanaWebhookCreatePath)
-    fun createWebhook(
+    fun asanaWebhookEntrypoint(
         @RequestHeader(webhookSecretHeader) secret: String?,
         @RequestHeader(webhookSignatureHeader) signature: String?,
         @RequestBody body: String?
@@ -55,11 +55,19 @@ class WebhookController {
                     .headers(responseHeaders)
                     .build()
             )
-        } else Mono.just(
-            ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body("Missing $webhookSecretHeader header!")
-        )
+        } else if (signature != null) {
+            Mono.just(
+                ResponseEntity
+                    .noContent()
+                    .build()
+            )
+        } else {
+            Mono.just(
+                ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .build()
+            )
+        }
     }
 
     @PostMapping("/webhook/new")

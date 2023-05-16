@@ -38,6 +38,16 @@ internal class WebhookControllerTest(
     }
 
     @Test
+    fun `should not allow calls with neither X-Hook-Secret nor X-Hook-Signature headers`() {
+        client
+            .post()
+            .uri(asanaWebhookCreatePath)
+            .bodyValue("")
+            .exchange()
+            .expectStatus().isBadRequest
+    }
+
+    @Test
     fun `should return X-Hook-Secret header on webhook handshake initiation`() {
         client
             .post()
