@@ -8,10 +8,10 @@ import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource
 
 @Configuration
-class CorsConfiguration {
-
+class CorsConfiguration(
     @Value("\${client-base-url}")
-    private lateinit var clientUrl: String
+    private val clientUrl: String,
+) {
 
     /**
      * A more restrictive CORS configuration applied to most endpoints served by this application.
