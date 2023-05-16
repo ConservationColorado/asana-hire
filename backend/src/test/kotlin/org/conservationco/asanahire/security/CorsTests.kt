@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.HttpHeaders
-import org.springframework.http.HttpMethod
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.reactive.server.WebTestClient
 
@@ -58,7 +57,7 @@ internal class CorsTests(
     @Test
     internal fun `should reject invalid preflight requests`() {
         client
-            .method(HttpMethod.OPTIONS)
+            .options()
             .uri("$serverUrl/jobs")
             .header(HttpHeaders.ORIGIN, "https://evil.com")
             .header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "PATCH")
@@ -73,7 +72,7 @@ internal class CorsTests(
     @Test
     internal fun `should allow POST requests from any origin at webhook create endpoint`() {
         client
-            .method(HttpMethod.POST)
+            .options()
             .uri("$serverUrl/$asanaWebhookCreatePath")
             .header(HttpHeaders.ORIGIN, "https://website.com")
             .exchange()
@@ -83,7 +82,7 @@ internal class CorsTests(
     @Test
     internal fun `should allow X-Hook-Secret header at webhook create endpoint`() {
         client
-            .method(HttpMethod.POST)
+            .options()
             .uri("$serverUrl/$asanaWebhookCreatePath")
             .header("X-Hook-Secret", "12345")
             .exchange()
