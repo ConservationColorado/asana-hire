@@ -10,7 +10,11 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import reactor.core.publisher.Mono
+import java.util.*
 import java.util.concurrent.ConcurrentHashMap
+import javax.crypto.Mac
+import javax.crypto.spec.SecretKeySpec
+
 
 @RestController
 class WebhookController {
@@ -36,7 +40,6 @@ class WebhookController {
      *   - iterate over x-hook-secrets to find a match
      */
     // todo move logic to a service layer
-    // todo store secret
     // todo if the secret exists, iterate over existing secrets
     // todo handle events
     // todo validate if events match the source expected from the stored secret
@@ -46,28 +49,34 @@ class WebhookController {
         @RequestHeader(webhookSignatureHeader) signature: String?,
         @RequestBody body: String?
     ): Mono<ResponseEntity<String>> {
-        return if (secret != null) {
+        val result: ResponseEntity<String> = if (secret != null) {
             // this is a new webhook
+            secrets.add(secret)
             val responseHeaders = HttpHeaders().apply { set(webhookSecretHeader, secret) }
-            Mono.just(
-                ResponseEntity
-                    .noContent()
-                    .headers(responseHeaders)
-                    .build()
-            )
+            ResponseEntity
+                .noContent()
+                .headers(responseHeaders)
+                .build()
         } else if (signature != null) {
-            Mono.just(
-                ResponseEntity
-                    .noContent()
-                    .build()
-            )
+            // this could be a request made from an existing webhook, but we don't yet know if we should trust it
+            // valid events (the request body) are signed with one of the secrets stored (it could be any!)
+            // check if any of our secrets produces a HMAC SHA256 digest that matches the signature
+            val matches = secrets.any { isTrusted(it, signature, body) }
+            if (matches) {
+                // process the events
+            }
+            else {
+                // warn untrusted
+            }
+            ResponseEntity
+                .status(HttpStatus.NO_CONTENT)
+                .build()
         } else {
-            Mono.just(
-                ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .build()
-            )
+            ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .build()
         }
+        return Mono.just(result)
     }
 
     @PostMapping("/webhook/new")
@@ -76,4 +85,22 @@ class WebhookController {
     @DeleteMapping("/webhook/delete")
     fun deleteWebhook(@RequestBody webhookId: String) = asanaContext {}
 
+}
+
+/**
+ * Returns true if [body] is signed with the given secret.
+ */
+private fun isTrusted(
+    secret: String,
+    givenSignature: String,
+    body: String?
+): Boolean {
+    val hmacSha256: Mac = Mac.getInstance("HmacSHA256")
+    val secretKey = SecretKeySpec(secret.toByteArray(), "HmacSHA256")
+    hmacSha256.init(secretKey)
+
+    val digest: ByteArray = hmacSha256.doFinal(body?.toByteArray())
+    val calculatedSignature: String = Base64.getEncoder().encodeToString(digest)
+
+    return calculatedSignature == givenSignature
 }
