@@ -48,6 +48,30 @@ internal class WebhookControllerTest(
     }
 
     @Test
+    fun `should reject request when X-Hook-Signature header is not derived from a previously established shared secret`() {
+        // Setup with a mock secret
+        client
+            .post()
+            .uri(asanaWebhookCreatePath)
+            .header(webhookSecretHeader, "12345")
+            .bodyValue("")
+            .exchange()
+
+        // Send an event with an invalid signature
+        client
+            .post()
+            .uri(asanaWebhookCreatePath)
+            .header(webhookSignatureHeader, "54321")
+            .bodyValue("""
+                {
+                    "foo": ["bar"]
+                }
+            """.trimIndent())
+            .exchange()
+            .expectStatus().is4xxClientError
+    }
+
+    @Test
     fun `should return X-Hook-Secret header on webhook handshake initiation`() {
         client
             .post()
@@ -58,5 +82,6 @@ internal class WebhookControllerTest(
             .expectStatus().isNoContent
             .expectHeader().valueMatches(webhookSecretHeader, "12345")
     }
+
 
 }

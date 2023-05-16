@@ -40,9 +40,6 @@ class WebhookController {
      *   - iterate over x-hook-secrets to find a match
      */
     // todo move logic to a service layer
-    // todo if the secret exists, iterate over existing secrets
-    // todo handle events
-    // todo validate if events match the source expected from the stored secret
     @PostMapping(asanaWebhookCreatePath)
     fun asanaWebhookEntrypoint(
         @RequestHeader(webhookSecretHeader) secret: String?,
@@ -53,28 +50,21 @@ class WebhookController {
             // this is a new webhook
             secrets.add(secret)
             val responseHeaders = HttpHeaders().apply { set(webhookSecretHeader, secret) }
-            ResponseEntity
-                .noContent()
-                .headers(responseHeaders)
-                .build()
+            ResponseEntity.noContent().headers(responseHeaders).build()
         } else if (signature != null) {
             // this could be a request made from an existing webhook, but we don't yet know if we should trust it
             // valid events (the request body) are signed with one of the secrets stored (it could be any!)
             // check if any of our secrets produces a HMAC SHA256 digest that matches the signature
-            val matches = secrets.any { isTrusted(it, signature, body) }
-            if (matches) {
-                // process the events
+            val isTrusted = secrets.any { isSignedBySecret(it, signature, body) }
+            if (isTrusted) {
+                // todo process the events
+                ResponseEntity.status(HttpStatus.NO_CONTENT).build()
+            } else {
+                ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).build()
             }
-            else {
-                // warn untrusted
-            }
-            ResponseEntity
-                .status(HttpStatus.NO_CONTENT)
-                .build()
+
         } else {
-            ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .build()
+            ResponseEntity.status(HttpStatus.BAD_REQUEST).build()
         }
         return Mono.just(result)
     }
@@ -90,17 +80,15 @@ class WebhookController {
 /**
  * Returns true if [body] is signed with the given secret.
  */
-private fun isTrusted(
-    secret: String,
-    givenSignature: String,
-    body: String?
+private fun isSignedBySecret(
+    secret: String, givenSignature: String, body: String?
 ): Boolean {
     val hmacSha256: Mac = Mac.getInstance("HmacSHA256")
     val secretKey = SecretKeySpec(secret.toByteArray(), "HmacSHA256")
     hmacSha256.init(secretKey)
 
     val digest: ByteArray = hmacSha256.doFinal(body?.toByteArray())
-    val calculatedSignature: String = Base64.getEncoder().encodeToString(digest)
+    val computedSignature: String = Base64.getEncoder().encodeToString(digest)
 
-    return calculatedSignature == givenSignature
+    return computedSignature == givenSignature
 }
