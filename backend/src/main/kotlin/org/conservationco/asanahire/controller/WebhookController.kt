@@ -6,7 +6,6 @@ import org.conservationco.asanahire.config.webhookSecretHeader
 import org.conservationco.asanahire.config.webhookSignatureHeader
 import org.conservationco.asanahire.model.job.Job
 import org.springframework.http.HttpHeaders
-import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import reactor.core.publisher.Mono
@@ -58,13 +57,13 @@ class WebhookController {
             val isTrusted = secrets.any { isSignedBySecret(it, signature, body) }
             if (isTrusted) {
                 // todo process the events
-                ResponseEntity.status(HttpStatus.NO_CONTENT).build()
+                ResponseEntity.noContent().build()
             } else {
-                ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).build()
+                ResponseEntity.unprocessableEntity().build()
             }
 
         } else {
-            ResponseEntity.status(HttpStatus.BAD_REQUEST).build()
+            ResponseEntity.badRequest().build()
         }
         return Mono.just(result)
     }
