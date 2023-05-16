@@ -2,14 +2,16 @@ package org.conservationco.asanahire.config
 
 import org.springframework.util.AntPathMatcher
 
-private val antPathMatcher = AntPathMatcher()
+internal const val webhookSecretHeader = "x-hook-secret"
+internal const val webhookSignatureHeader = "x-hook-signature"
+internal const val asanaWebhookCreatePath = "/webhook/asana/create"
 
-internal const val webhookCreatePath = "/webhook/create"
+private val antPathMatcher = AntPathMatcher()
 
 internal val publicPatterns = arrayOf(
     "/login",
     "/error",
-    webhookCreatePath
+    asanaWebhookCreatePath
 )
 
 internal fun isPublicUrl(path: String) = doesPathMatch(path, publicPatterns)
