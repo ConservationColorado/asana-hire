@@ -2,8 +2,8 @@ package org.conservationco.asanahire.config
 
 import org.springframework.util.AntPathMatcher
 
-internal const val webhookSecretHeader = "x-hook-secret"
-internal const val webhookSignatureHeader = "x-hook-signature"
+internal const val webhookSecretHeader = "X-Hook-Secret"
+internal const val webhookSignatureHeader = "X-Hook-Signature"
 internal const val asanaWebhookCreatePath = "/webhook/asana/create"
 
 private val antPathMatcher = AntPathMatcher()
