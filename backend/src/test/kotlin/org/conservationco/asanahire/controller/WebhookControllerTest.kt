@@ -1,6 +1,6 @@
 package org.conservationco.asanahire.controller
 
-import org.conservationco.asanahire.config.asanaWebhookCreatePath
+import org.conservationco.asanahire.config.asanaWebhookPath
 import org.conservationco.asanahire.config.webhookSecretHeader
 import org.conservationco.asanahire.config.webhookSignatureHeader
 import org.conservationco.asanahire.util.computeHmac256Signature
@@ -22,7 +22,7 @@ internal class WebhookControllerTest(
     fun `pre-handshake, should allow X-Hook-Secret header`() {
         client
             .options()
-            .uri(asanaWebhookCreatePath)
+            .uri(asanaWebhookPath)
             .header(webhookSecretHeader, "12345")
             .exchange()
             .expectStatus().isOk
@@ -32,7 +32,7 @@ internal class WebhookControllerTest(
     fun `pre-handshake, should allow X-Hook-Signature header`() {
         client
             .options()
-            .uri(asanaWebhookCreatePath)
+            .uri(asanaWebhookPath)
             .header(webhookSignatureHeader, "54321")
             .exchange()
             .expectStatus().isOk
@@ -42,13 +42,13 @@ internal class WebhookControllerTest(
     fun `pre-handshake, should require a request body`() {
         client
             .post()
-            .uri(asanaWebhookCreatePath)
+            .uri(asanaWebhookPath)
             .exchange()
             .expectStatus().isBadRequest
 
         client
             .post()
-            .uri(asanaWebhookCreatePath)
+            .uri(asanaWebhookPath)
             .bodyValue("")
             .exchange()
             .expectStatus().isNoContent
@@ -58,7 +58,7 @@ internal class WebhookControllerTest(
     fun `pre-handshake, should allow calls with neither X-Hook-Secret nor X-Hook-Signature headers`() {
         client
             .post()
-            .uri(asanaWebhookCreatePath)
+            .uri(asanaWebhookPath)
             .bodyValue("")
             .exchange()
             .expectStatus().isNoContent
@@ -68,7 +68,7 @@ internal class WebhookControllerTest(
     fun `mid-handshake, should return X-Hook-Secret header on initiation`() {
         client
             .post()
-            .uri(asanaWebhookCreatePath)
+            .uri(asanaWebhookPath)
             .header(webhookSecretHeader, "12345")
             .bodyValue("")
             .exchange()
@@ -84,7 +84,7 @@ internal class WebhookControllerTest(
         // Setup with a mock secret
         client
             .post()
-            .uri(asanaWebhookCreatePath)
+            .uri(asanaWebhookPath)
             .header(webhookSecretHeader, secret)
             .bodyValue("")
             .exchange()
@@ -92,7 +92,7 @@ internal class WebhookControllerTest(
         // Send an event with an invalid signature
         client
             .post()
-            .uri(asanaWebhookCreatePath)
+            .uri(asanaWebhookPath)
             .header(webhookSignatureHeader, "This is not the agreed-upon secret!")
             .bodyValue(body)
             .exchange()
@@ -108,7 +108,7 @@ internal class WebhookControllerTest(
         // Setup with a mock secret
         client
             .post()
-            .uri(asanaWebhookCreatePath)
+            .uri(asanaWebhookPath)
             .header(webhookSecretHeader, secret)
             .bodyValue("")
             .exchange()
@@ -116,7 +116,7 @@ internal class WebhookControllerTest(
         // Send an event with a valid signature
         client
             .post()
-            .uri(asanaWebhookCreatePath)
+            .uri(asanaWebhookPath)
             .header(webhookSignatureHeader, signature)
             .bodyValue(body)
             .exchange()
@@ -130,7 +130,7 @@ internal class WebhookControllerTest(
         // Setup with a mock secret
         client
             .post()
-            .uri(asanaWebhookCreatePath)
+            .uri(asanaWebhookPath)
             .header(webhookSecretHeader, secret)
             .bodyValue("")
             .exchange()
@@ -138,7 +138,7 @@ internal class WebhookControllerTest(
         // Send an event with no signature and an empty request body
         client
             .post()
-            .uri(asanaWebhookCreatePath)
+            .uri(asanaWebhookPath)
             .bodyValue("")
             .exchange()
             .expectStatus().isNoContent

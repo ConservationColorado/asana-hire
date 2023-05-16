@@ -4,14 +4,14 @@ import org.springframework.util.AntPathMatcher
 
 internal const val webhookSecretHeader = "X-Hook-Secret"
 internal const val webhookSignatureHeader = "X-Hook-Signature"
-internal const val asanaWebhookCreatePath = "/webhook/asana/create"
+internal const val asanaWebhookPath = "/webhook/asana/create"
 
 private val antPathMatcher = AntPathMatcher()
 
 internal val publicPatterns = arrayOf(
     "/login",
     "/error",
-    asanaWebhookCreatePath
+    asanaWebhookPath
 )
 
 internal fun isPublicUrl(path: String) = doesPathMatch(path, publicPatterns)

@@ -1,7 +1,7 @@
 package org.conservationco.asanahire.controller
 
 import org.conservationco.asana.asanaContext
-import org.conservationco.asanahire.config.asanaWebhookCreatePath
+import org.conservationco.asanahire.config.asanaWebhookPath
 import org.conservationco.asanahire.config.webhookSecretHeader
 import org.conservationco.asanahire.config.webhookSignatureHeader
 import org.conservationco.asanahire.model.job.Job
@@ -26,7 +26,7 @@ class WebhookController(
      *  @param signature the HMAC SHA256 signature of the request body, derived from the shared secret
      *  @param body the JSON `String` containing event data
      */
-    @PostMapping(asanaWebhookCreatePath)
+    @PostMapping(asanaWebhookPath)
     fun asanaWebhookEntrypoint(
         @RequestHeader(webhookSecretHeader) secret: String?,
         @RequestHeader(webhookSignatureHeader) signature: String?,
