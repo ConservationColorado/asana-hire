@@ -3,6 +3,7 @@ package org.conservationco.asanahire.controller
 import org.conservationco.asanahire.config.asanaWebhookCreatePath
 import org.conservationco.asanahire.config.webhookSecretHeader
 import org.conservationco.asanahire.config.webhookSignatureHeader
+import org.conservationco.asanahire.util.computeHmac256Signature
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
@@ -18,7 +19,17 @@ internal class WebhookControllerTest(
 ) {
 
     @Test
-    fun `should allow X-Hook-Signature header`() {
+    fun `pre-handshake, should allow X-Hook-Secret header`() {
+        client
+            .options()
+            .uri(asanaWebhookCreatePath)
+            .header(webhookSecretHeader, "12345")
+            .exchange()
+            .expectStatus().isOk
+    }
+
+    @Test
+    fun `pre-handshake, should allow X-Hook-Signature header`() {
         client
             .options()
             .uri(asanaWebhookCreatePath)
@@ -28,52 +39,33 @@ internal class WebhookControllerTest(
     }
 
     @Test
-    fun `should require a request body on webhook create request`() {
+    fun `pre-handshake, should require a request body`() {
         client
             .post()
             .uri(asanaWebhookCreatePath)
             .exchange()
             .expectStatus().isBadRequest
-    }
 
-    @Test
-    fun `should not allow calls with neither X-Hook-Secret nor X-Hook-Signature headers`() {
         client
             .post()
             .uri(asanaWebhookCreatePath)
             .bodyValue("")
             .exchange()
-            .expectStatus().isBadRequest
+            .expectStatus().isNoContent
     }
 
     @Test
-    fun `should reject request when X-Hook-Signature header is not derived from a previously established shared secret`() {
-        // Setup with a mock secret
+    fun `pre-handshake, should allow calls with neither X-Hook-Secret nor X-Hook-Signature headers`() {
         client
             .post()
             .uri(asanaWebhookCreatePath)
-            .header(webhookSecretHeader, "12345")
             .bodyValue("")
             .exchange()
-
-        // Send an event with an invalid signature
-        client
-            .post()
-            .uri(asanaWebhookCreatePath)
-            .header(webhookSignatureHeader, "54321")
-            .bodyValue(
-                """
-                {
-                    "foo": ["bar"]
-                }
-            """.trimIndent()
-            )
-            .exchange()
-            .expectStatus().is4xxClientError
+            .expectStatus().isNoContent
     }
 
     @Test
-    fun `should return X-Hook-Secret header on webhook handshake initiation`() {
+    fun `mid-handshake, should return X-Hook-Secret header on initiation`() {
         client
             .post()
             .uri(asanaWebhookCreatePath)
@@ -82,6 +74,74 @@ internal class WebhookControllerTest(
             .exchange()
             .expectStatus().isNoContent
             .expectHeader().valueMatches(webhookSecretHeader, "12345")
+    }
+
+    @Test
+    fun `post-handshake, should reject request when X-Hook-Signature header is not derived from shared secret`() {
+        val secret = "12345"
+        val body = "Hello, HMAC SHA256!"
+
+        // Setup with a mock secret
+        client
+            .post()
+            .uri(asanaWebhookCreatePath)
+            .header(webhookSecretHeader, secret)
+            .bodyValue("")
+            .exchange()
+
+        // Send an event with an invalid signature
+        client
+            .post()
+            .uri(asanaWebhookCreatePath)
+            .header(webhookSignatureHeader, "This is not the agreed-upon secret!")
+            .bodyValue(body)
+            .exchange()
+            .expectStatus().isBadRequest
+    }
+
+    @Test
+    fun `post-handshake, should accept request when X-Hook-Signature header is derived from shared secret`() {
+        val secret = "12345"
+        val body = "Hello, HMAC SHA256!"
+        val signature = computeHmac256Signature(secret, body)
+
+        // Setup with a mock secret
+        client
+            .post()
+            .uri(asanaWebhookCreatePath)
+            .header(webhookSecretHeader, secret)
+            .bodyValue("")
+            .exchange()
+
+        // Send an event with a valid signature
+        client
+            .post()
+            .uri(asanaWebhookCreatePath)
+            .header(webhookSignatureHeader, signature)
+            .bodyValue(body)
+            .exchange()
+            .expectStatus().isOk
+    }
+
+    @Test
+    fun `post-handshake, should allow heartbeat requests with empty body and no signature after handshake`() {
+        val secret = "12345"
+
+        // Setup with a mock secret
+        client
+            .post()
+            .uri(asanaWebhookCreatePath)
+            .header(webhookSecretHeader, secret)
+            .bodyValue("")
+            .exchange()
+
+        // Send an event with no signature and an empty request body
+        client
+            .post()
+            .uri(asanaWebhookCreatePath)
+            .bodyValue("")
+            .exchange()
+            .expectStatus().isNoContent
     }
 
 }
