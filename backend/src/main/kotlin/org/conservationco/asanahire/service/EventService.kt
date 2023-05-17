@@ -3,7 +3,6 @@ package org.conservationco.asanahire.service
 import com.asana.models.Event
 import com.google.gson.Gson
 import com.google.gson.JsonElement
-import com.google.gson.stream.MalformedJsonException
 import org.springframework.boot.json.JsonParseException
 import org.springframework.stereotype.Service
 import java.util.logging.Logger
