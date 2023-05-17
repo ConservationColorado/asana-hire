@@ -39,12 +39,12 @@ internal class WebhookControllerTest(
     }
 
     @Test
-    fun `pre-handshake, should require a request body`() {
+    fun `pre-handshake, should allow requests without a body`() {
         client
             .post()
             .uri(asanaWebhookPath)
             .exchange()
-            .expectStatus().isBadRequest
+            .expectStatus().isNoContent
 
         client
             .post()
