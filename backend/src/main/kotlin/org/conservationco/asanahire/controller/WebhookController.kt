@@ -30,7 +30,7 @@ class WebhookController(
     fun asanaWebhookEntrypoint(
         @RequestHeader(webhookSecretHeader) secret: String?,
         @RequestHeader(webhookSignatureHeader) signature: String?,
-        @RequestBody body: String?
+        @RequestBody(required = false) body: String?
     ) = Mono.just(webhookService.handleWebhookRequest(secret, signature, body))
 
     @PostMapping("/webhook/new")
