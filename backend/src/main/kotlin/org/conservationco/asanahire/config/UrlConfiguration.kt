@@ -4,7 +4,7 @@ import org.springframework.util.AntPathMatcher
 
 internal const val webhookSecretHeader = "X-Hook-Secret"
 internal const val webhookSignatureHeader = "X-Hook-Signature"
-internal const val asanaWebhookPath = "/webhook/asana/create"
+internal const val asanaWebhookPath = "/webhook/asana"
 
 private val antPathMatcher = AntPathMatcher()
 
