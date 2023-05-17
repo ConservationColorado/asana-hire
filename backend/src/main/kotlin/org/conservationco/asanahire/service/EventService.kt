@@ -4,6 +4,7 @@ import com.asana.models.Event
 import com.google.gson.Gson
 import com.google.gson.JsonElement
 import com.google.gson.stream.MalformedJsonException
+import org.springframework.boot.json.JsonParseException
 import org.springframework.stereotype.Service
 import java.util.logging.Logger
 
@@ -33,7 +34,7 @@ class EventService(
                 .get("events")
                 .asJsonArray
                 .map { gson.fromJson(it, Event::class.java) }
-        } catch (e: MalformedJsonException) {
+        } catch (e: JsonParseException) {
             logger.severe("Could not parse the given JSON: $json")
             emptyList()
         }
