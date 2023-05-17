@@ -1,5 +1,6 @@
 package org.conservationco.asanahire.util
 
+import java.security.MessageDigest
 import java.util.*
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
@@ -8,12 +9,12 @@ import javax.crypto.spec.SecretKeySpec
  * Returns true if [data] is signed with the given [secret].
  */
 internal fun isSignedBySecret(secret: String, givenSignature: String, data: String?): Boolean {
-    val hmacSha256: Mac = Mac.getInstance("HmacSHA256")
+    val hmacSha256 = Mac.getInstance("HmacSHA256")
     val secretKey = SecretKeySpec(secret.toByteArray(), "HmacSHA256")
     hmacSha256.init(secretKey)
-    val digest: ByteArray = hmacSha256.doFinal(data?.toByteArray())
-    val computedSignature: String = Base64.getEncoder().encodeToString(digest)
-    return computedSignature == givenSignature
+    val digest = hmacSha256.doFinal(data?.toByteArray())
+    val computedSignature = HexFormat.of().formatHex(digest)
+    return MessageDigest.isEqual(computedSignature.toByteArray(), givenSignature.toByteArray())
 }
 
 internal fun computeHmac256Signature(secret: String, data: String): String {
@@ -22,5 +23,5 @@ internal fun computeHmac256Signature(secret: String, data: String): String {
     val hmac = Mac.getInstance(algorithm)
     hmac.init(hmacKey)
     val signature = hmac.doFinal(data.toByteArray())
-    return Base64.getEncoder().encodeToString(signature)
+    return HexFormat.of().formatHex(signature)
 }
