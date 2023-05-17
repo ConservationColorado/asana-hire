@@ -79,7 +79,14 @@ internal class WebhookControllerTest(
     @Test
     fun `post-handshake, should reject request when X-Hook-Signature header is not derived from shared secret`() {
         val secret = "12345"
-        val body = "Hello, HMAC SHA256!"
+        val body = """
+            {
+              "events": [
+              
+              ]
+            }
+        """.trimIndent()
+
 
         // Setup with a mock secret
         client
@@ -102,7 +109,13 @@ internal class WebhookControllerTest(
     @Test
     fun `post-handshake, should accept request when X-Hook-Signature header is derived from shared secret`() {
         val secret = "12345"
-        val body = "Hello, HMAC SHA256!"
+        val body = """
+            {
+              "events": [
+              
+              ]
+            }
+        """.trimIndent()
         val signature = computeHmac256Signature(secret, body)
 
         // Setup with a mock secret
