@@ -6,6 +6,7 @@ import org.conservationco.asanahire.config.webhookSecretHeader
 import org.conservationco.asanahire.config.webhookSignatureHeader
 import org.conservationco.asanahire.model.job.Job
 import org.conservationco.asanahire.service.WebhookService
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import reactor.core.publisher.Mono
 import java.util.*
@@ -31,7 +32,7 @@ class WebhookController(
         @RequestHeader(webhookSecretHeader) secret: String?,
         @RequestHeader(webhookSignatureHeader) signature: String?,
         @RequestBody(required = false) body: String?
-    ) = Mono.just(webhookService.handleWebhookRequest(secret, signature, body))
+    ): Mono<out ResponseEntity<*>> = webhookService.handleWebhookRequest(secret, signature, body)
 
     @PostMapping("/webhook/new")
     fun newWebhookRequest(@RequestBody job: Job): String = asanaContext { return "" }

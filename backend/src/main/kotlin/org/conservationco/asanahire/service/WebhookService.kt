@@ -5,6 +5,7 @@ import org.conservationco.asanahire.util.isSignedBySecret
 import org.springframework.http.HttpHeaders
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
+import reactor.core.publisher.Mono
 import java.util.concurrent.ConcurrentHashMap
 
 @Service
@@ -18,24 +19,23 @@ class WebhookService(
      */
     private val secrets = ConcurrentHashMap.newKeySet<String>()
 
-    internal fun handleWebhookRequest(secret: String?, signature: String?, body: String?): ResponseEntity<String> =
+    internal fun handleWebhookRequest(secret: String?, signature: String?, body: String?): Mono<out ResponseEntity<*>> =
         if (isNewSecret(secret)) processNewSecret(secret)
         else if (signature != null) validateRequestBody(signature, body)
-        else ResponseEntity.noContent().build()
+        else Mono.just(ResponseEntity.noContent().build<String>())
 
-    private fun processNewSecret(secret: String?): ResponseEntity<String> {
+    private fun processNewSecret(secret: String?): Mono<ResponseEntity<*>> {
         secrets.add(secret)
         val responseHeaders = HttpHeaders()
         responseHeaders[webhookSecretHeader] = secret
-        return ResponseEntity.noContent().headers(responseHeaders).build()
+        return Mono.just(ResponseEntity.noContent().headers(responseHeaders).build<String>())
     }
 
-    private fun validateRequestBody(signature: String, body: String?): ResponseEntity<String> =
+    private fun validateRequestBody(signature: String, body: String?): Mono<ResponseEntity<String>> =
         if (isSignedByAnyKnownSecrets(signature, body) && !body.isNullOrEmpty()) {
             eventService.processEvents(body)
-            ResponseEntity.ok().build()
         } else {
-            ResponseEntity.badRequest().build()
+            Mono.just(ResponseEntity.badRequest().build<String>())
         }
 
     private fun isSignedByAnyKnownSecrets(signature: String, body: String?) =

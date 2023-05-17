@@ -25,6 +25,13 @@ class JobService(
 
     private val logger = Logger.getLogger(JobService::class.qualifiedName)
 
+    internal fun findJobOrFetch(applicationProjectId: String): Mono<Job> {
+        val findMono = jobRepository.findFirstByApplicationProjectId(applicationProjectId)
+        return findMono
+            .switchIfEmpty(fetchAndBuildJobs().then(findMono))
+            .onErrorResume { handleSaveError(logger, it) }
+    }
+
     fun getLocalOrFetchJob(jobId: Long): Mono<Job> =
         jobRepository
             .findById(jobId)

@@ -1,5 +1,6 @@
 package org.conservationco.asanahire.exception
 
+import com.asana.errors.AsanaError
 import com.google.api.client.googleapis.json.GoogleJsonResponseException
 import org.springframework.http.HttpStatus
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException
@@ -39,6 +40,14 @@ class GlobalExceptionHandler {
         ErrorResponse.builder(
             ex,
             HttpStatus.FORBIDDEN,
+            ex.message.toString()
+        ).build()
+
+    @ExceptionHandler(AsanaError::class)
+    fun handleAsanaError(ex: AsanaError) =
+        ErrorResponse.builder(
+            ex,
+            HttpStatus.INTERNAL_SERVER_ERROR,
             ex.message.toString()
         ).build()
 

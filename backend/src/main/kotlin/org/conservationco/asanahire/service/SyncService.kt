@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import java.util.concurrent.ConcurrentHashMap
+import java.util.logging.Logger
 
 @Service
 class SyncService(
@@ -25,6 +26,8 @@ class SyncService(
     private val syncEventRepository: SyncEventRepository,
     private val mailService: MailService,
 ) {
+
+    private val logger = Logger.getLogger(EventService::class.qualifiedName)
 
     private val jobLocks = ConcurrentHashMap<Long, Any>()
 
@@ -103,7 +106,7 @@ class SyncService(
      *
      * These are completed synchronously with guaranteed completion order.
      */
-    private fun syncSingleApplicant(
+    internal fun syncSingleApplicant(
         applicantPair: ApplicantSyncPair,
         destination: Project,
         jobTitle: String,
@@ -121,6 +124,10 @@ class SyncService(
         return mailService
             .createMessage(recipient, message)
             .flatMap { mailService.send(it) }
+            .onErrorResume {
+                logger.severe("Could not send message to applicant $applicant")
+                Mono.empty()
+            }
             .then()
     }
 
