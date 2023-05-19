@@ -24,9 +24,21 @@ your hiring process, and automates your administrative work. Read on to learn mo
 1. [Background and motivation](#background-and-motivation)
 2. [What this application can do](#what-this-application-can-do)
 3. Getting started
-   - [🔗 Environment variables](docs/guide-to-environment-variables.md)
-   - [🔗 Setting up a local environment](docs/guide-to-local-setup.md)
-   - [🔗 Deploying to the cloud](docs/guide-to-cloud-deploy.md)
+    - [🔗 Environment variables](docs/guide-to-environment-variables.md)
+    - [🔗 Setting up a local environment](docs/guide-to-local-setup.md)
+    - [🔗 Deploying to the cloud](docs/guide-to-cloud-deploy.md)
+
+### What this application can do
+
+- Create a pipeline that collects all your hiring data automatically, with strict separation of concerns to protect
+  sensitive candidate information
+- Track applicants across a single hiring process or across all processes
+- Copy applicants from one Asana project to another while hiding sensitive data from the interview committee
+- Send applicants personalized update emails, including receipt of application, release from process, or custom messages
+- View anonymized hiring data in charts and graphs through Asana's reporting feature
+- Secure all this data with organization-bound Google OIDC and OAuth2 user authentication and authorization
+- [Run or deploy the application easily using Docker](docs/guide-to-cloud-deploy.md)
+- [Separate your deployments with environment variables](docs/guide-to-environment-variables.md)
 
 ### Background and motivation
 
@@ -46,15 +58,3 @@ Also, we can easily export and report on data within Asana.
 
 In short, Asana gives high availability and non-techie user-friendliness in exchange for additional latency when this
 application is used manually. This is a worthwhile tradeoff for our use case!
-
-### What this application can do
-
-- Create a pipeline that collects all your hiring data automatically, with strict separation of concerns to protect
-  sensitive candidate information
-- Track applicants across a single hiring process or across all processes
-- Copy applicants from one Asana project to another while hiding sensitive data from the interview committee
-- Send applicants personalized update emails, including receipt of application, release from process, or custom messages
-- View anonymized hiring data in charts and graphs through Asana's reporting feature
-- Secure all this data with organization-bound Google OIDC and OAuth2 user authentication and authorization
-- [Run or deploy the application easily using Docker and Docker Compose](#deploying-to-the-cloud)
-- [Separate your deployments with environment variables](#environment-variables)
