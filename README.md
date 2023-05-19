@@ -21,8 +21,8 @@ your hiring process, and automates your administrative work. Read on to learn mo
 
 ## Table of contents
 
-1. [Background and motivation](#background-and-motivation)
-2. [What this application can do](#what-this-application-can-do)
+1. [What this application can do](#what-this-application-can-do)
+2. [Background and motivation](#background-and-motivation)
 3. Getting started
     - [🔗 Environment variables](docs/guide-to-environment-variables.md)
     - [🔗 Setting up a local environment](docs/guide-to-local-setup.md)
