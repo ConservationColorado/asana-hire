@@ -39,7 +39,7 @@ your hiring process, and automates your administrative work. Read on to learn mo
 - Secure all this data with organization-bound Google OIDC and OAuth2 user authentication and authorization
 - Run or deploy the application easily using Docker, both [during development](docs/guide-to-local-setup.md)
   and [in production](docs/guide-to-cloud-deploy.md)
-- Secure secrets Define your deployments just in time and
+- Secure secrets and define your deployments just in time
   with [environment variable configuration](docs/guide-to-environment-variables.md)
 
 ### Background and motivation
