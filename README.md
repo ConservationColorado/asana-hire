@@ -15,8 +15,10 @@ your hiring process, and automates your administrative work. Read on to learn mo
 ## Quick demo
 
 <div align="center">
-  <img src="docs/demo.gif" alt="asana-hire demo in an animated image">
-  <p>Here's a quick demo of the application, including pages for individual jobs.</p>
+    <img src="docs/demo.gif" alt="asana-hire demo in an animated image">
+    <p>Here's a quick demo of the application, including pages for individual jobs and a preview of personalized candidate management.</p>
+    <img width="800"  src="docs/example-demographics.png" alt="Example demographics dashboard populated by the application">
+    <p>Here's an example demographics dashboard populated by the application.</p>
 </div>
 
 ## Table of contents
