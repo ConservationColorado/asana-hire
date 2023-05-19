@@ -4,7 +4,7 @@
 # You'll need to have a static IP address for this VM and a hostname on hand to run this.
 # Sets up Docker, Nginx, and SSL
 
-# Redirect stdout and stderr to a log file
+# Don't clutter the console with too many messages by redirecting stdout and stderr to a log file
 exec &>>/var/log/setup-debian-vm.log
 
 if [ "$EUID" -ne 0 ]; then
@@ -12,20 +12,21 @@ if [ "$EUID" -ne 0 ]; then
   exit 1
 fi
 
-# The user needs to specify a few variables to start
+# We'll use these for conf
 read -rp "Please enter the static IP address in use by this VM instance" static_ip_address
 read -rp "Please enter the custom hostname to use for this VM instance" hostname
 
-# Install any Debian updates
+# Update the VM with the latest .deb packages
 apt update
 apt upgrade -y
 apt-get update
 
-# Configure self hostname for this VM
+# The hostname for this VM needs to match the NGINX configuration we'll set up later
 hostnamectl set-hostname "$hostname"
 echo "$static_ip_address $hostname" >>/etc/hosts
 
 # Install Docker
+# From https://docs.docker.com/engine/install/debian/
 apt-get remove docker docker-engine docker.io containerd runc
 apt-get install \
   ca-certificates \
@@ -46,7 +47,7 @@ if ! command -v docker &>/dev/null; then
 fi
 
 # We need a reverse proxy to expose any Docker networks we set up later to the internet.
-# We'll use nginx and set up a starter configuration to proxy the client + api servers forwarded from the Docker network
+# We'll use NGINX and set up a starter configuration to proxy the client + api servers forwarded from the Docker network
 apt-get install nginx
 
 # Let's Encrypt's certbot will generate more configuration when we run it in a bit
@@ -79,13 +80,13 @@ server {
 
 EOF
 if ! nginx -t; then
-  echo "Error: Nginx configuration is invalid." >&2
+  echo "Error: NGINX configuration is invalid." >&2
   exit 1
 fi
 
-# Currently, this VM is accessible on the internet, but over HTTP only!
-# We need to generate and install an SSL certificate to use HTTPS.
-# We'll use Let's Encrypt's certbot, which is auto-renewing
+# Currently, starting NGINX on this VM would make it accessible on the internet, but over HTTP only on :80
+# We need to generate and install an SSL certificate to use HTTPS and serve over :443
+# We'll use Let's Encrypt's certbot, which is auto-renewing and will modify the default NGINX conf we just created
 # From https://stackoverflow.com/a/70387205
 apt install certbot python3-certbot-nginx
 certbot --nginx -d "$hostname" && certbot --nginx -d "api.$hostname" || {

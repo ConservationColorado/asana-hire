@@ -3,7 +3,7 @@
 This guide provides all the steps you need to deploy the application to the cloud. After following these steps, you'll
 be able to access the application from anywhere.
 
-I've provided [a Shell script to get a Debian-based virtual machine set up](scripts/setup-debian-vm.sh) that greatly
+I've provided [a Shell script to get a Debian-based virtual machine set up](../scripts/setup-debian-vm.sh) that greatly
 simplifies the steps you'll take. Before you run this, you'll need to meet all the prerequisites. Then, you can proceed
 to deploy the application.
 
@@ -68,8 +68,8 @@ git clone https://github.com/ConservationColorado/asana-hire.git
 
 ### Run the script
 
-**⚠️ Note!** Running this script _will_ expose your virtual machine's port 80 to the internet! Please understand the
-implications of this before continuing.
+**⚠️ Note!** Running this script _will_ expose your virtual machine's port 443 to the internet over HTTPS! Please
+understand the implications of this before continuing.
 
 ```shell
 sudo asana-hire/scripts/setup-debian-vm.sh
