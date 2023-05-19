@@ -85,8 +85,8 @@ if ! nginx -t; then
 fi
 
 # Currently, starting NGINX on this VM would make it accessible on the internet, but over HTTP only on :80
-# We need to generate and install an SSL certificate to use HTTPS
-# We'll use Let's Encrypt's certbot, which is auto-renewing
+# We need to generate and install an SSL certificate to use HTTPS and serve over :443
+# We'll use Let's Encrypt's certbot, which is auto-renewing and will modify the default NGINX conf we just created
 # From https://stackoverflow.com/a/70387205
 apt install certbot python3-certbot-nginx
 certbot --nginx -d "$hostname" && certbot --nginx -d "api.$hostname" || {
