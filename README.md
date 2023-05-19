@@ -37,8 +37,10 @@ your hiring process, and automates your administrative work. Read on to learn mo
 - Send applicants personalized update emails, including receipt of application, release from process, or custom messages
 - View anonymized hiring data in charts and graphs through Asana's reporting feature
 - Secure all this data with organization-bound Google OIDC and OAuth2 user authentication and authorization
-- [Run or deploy the application easily using Docker](docs/guide-to-cloud-deploy.md)
-- [Separate your deployments with environment variables](docs/guide-to-environment-variables.md)
+- Run or deploy the application easily using Docker, both [during development](docs/guide-to-local-setup.md)
+  and [in production](docs/guide-to-cloud-deploy.md)
+- Secure secrets Define your deployments just in time and
+  with [environment variable configuration](docs/guide-to-environment-variables.md)
 
 ### Background and motivation
 
